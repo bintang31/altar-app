@@ -43,9 +43,8 @@ jobs:
 
         cp docker/dockerfile-api Dockerfile
         docker build -t altar-app:v2 .
-        docker tag altar-app:v2
+        docker tag altar-app:v2 altar-app:v2
         docker push ${{ secrets.DOCKER_USERNAME }}/altar-app:v2
-
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUBTOKEN }}
         GOPATH: /home/runner/work/altar-app/altar-app/go
