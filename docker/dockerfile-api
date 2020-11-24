@@ -18,4 +18,4 @@ ADD altar-app /app/altar-app
 RUN chmod +x /app/altar-app && \
     mkdir -p /app/log
 
-CMD cd /app && ./altar-app
+CMD cd /app && ./altar-app start
