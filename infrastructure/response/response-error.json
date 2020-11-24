@@ -1,0 +1,8 @@
+{
+    "response": {
+        "code": "50000000",
+        "status": "ERROR",
+        "message": "Undefined response message"
+    },
+    "properties": {}
+}

@@ -1,0 +1,170 @@
+{
+    "alias": {
+        "auth_nopermission": "000100",
+        "login_success": "010100",
+        "profile_show": "020100"
+
+    },
+    "result": {
+        "000100": {
+            "response": {
+                "code": "40300000",
+                "status": "FORBIDDEN",
+                "message": "You don't have permission to access this resource"
+            },
+            "properties": {}
+        },
+        "010100": {
+            "response": {
+                "code": "20000000",
+                "status": "SUCCESS",
+                "message": "Login Success"
+            },
+            "properties": {}
+        },
+        "010101": {
+            "response": {
+                "code": "20000000",
+                "status": "SUCCESS",
+                "message": "Get List All PDAM"
+            },
+            "properties": {}
+        },
+        "010102": {
+            "response": {
+                "code": "20000000",
+                "status": "SUCCESS",
+                "message": "Get List All Rayon"
+            },
+            "properties": {}
+        },
+        "010103": {
+            "response": {
+                "code": "20000000",
+                "status": "SUCCESS",
+                "message": "Get List All Kolektif"
+            },
+            "properties": {}
+        },
+        "010104": {
+            "response": {
+                "code": "20000000",
+                "status": "SUCCESS",
+                "message": "Get List All Pelanggan"
+            },
+            "properties": {}
+        },
+        "010105": {
+            "response": {
+                "code": "20000000",
+                "status": "SUCCESS",
+                "message": "Get List Penagihan Pelanggan"
+            },
+            "properties": {}
+        },
+        "010106": {
+            "response": {
+                "code": "20000000",
+                "status": "SUCCESS",
+                "message": "Get List Penerimaan Petugas"
+            },
+            "properties": {}
+        },
+        "020100": {
+            "response": {
+                "code": "20000000",
+                "status": "SUCCESS",
+                "message": "Menampilkan profil"
+            },
+            "properties": {}
+        },
+        "010201": {
+            "response": {
+                "code": "20000000",
+                "status": "SUCCESS",
+                "message": "Pelanggan Detail Tagihan"
+            },
+            "properties": {}
+        },
+        "010203": {
+            "response": {
+                "code": "20000000",
+                "status": "SUCCESS",
+                "message": "List All Pelanggan"
+            },
+            "properties": {}
+        },
+        "010202": {
+            "response": {
+                "code": "20000000",
+                "status": "SUCCESS",
+                "message": "Penagihan Pelanggan"
+            },
+            "properties": {}
+        },
+        "010204": {
+            "response": {
+                "code": "20000000",
+                "status": "SUCCESS",
+                "message": "Penagihan Pelanggan Diterima"
+            },
+            "properties": {}
+        },
+        "010205": {
+            "response": {
+                "code": "20000000",
+                "status": "SUCCESS",
+                "message": "Penagihan Pelanggan Disetor"
+            },
+            "properties": {}
+        },
+        "030100": {
+            "response": {
+                "code": "20000000",
+                "status": "SUCCESS",
+                "message": "Profile Petugas"
+            },
+            "properties": {}
+        },
+        "030101": {
+            "response": {
+                "code": "20000000",
+                "status": "SUCCESS",
+                "message": "Get List Petugas"
+            },
+            "properties": {}
+        },
+        "030102": {
+            "response": {
+                "code": "20000000",
+                "status": "SUCCESS",
+                "message": "Get Tagihan Pelanggan"
+            },
+            "properties": {}
+        },
+        "040100": {
+            "response": {
+                "code": "20000000",
+                "status": "SUCCESS",
+                "message": "Find Penagihan Kolektif"
+            },
+            "properties": {}
+        },
+        "050100": {
+            "response": {
+                "code": "20000000",
+                "status": "SUCCESS",
+                "message": "Get All Data Petugas Penagihan"
+            },
+            "properties": {}
+        },
+        "050101": {
+            "response": {
+                "code": "20000000",
+                "status": "SUCCESS",
+                "message": "Get Report Petugas"
+            },
+            "properties": {}
+        }
+    }
+}
