@@ -36,7 +36,10 @@ jobs:
         GOPATH: /home/runner/work/altar-app/altar-app/go
 
     - name: Build
-      run: go build -v .
-
-    - name: Test
-      run: go test -v .
+      run: |
+        cd ${GOPATH}/src/altar-app
+        env GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build
+        echo "${{ secrets.DOCKER_PASSWORD }}"
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUBTOKEN }}
+        GOPATH: /home/runner/work/altar-app/altar-app/go
