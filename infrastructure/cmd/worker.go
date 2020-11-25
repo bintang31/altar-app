@@ -33,9 +33,9 @@ var workerUsage = `
 Run mobileloket worker
 
 Usage:
-mobileloket worker [command]
+altar worker [command]
 
 Available Commands:
-	start                Start mobileloket worker
-	stop                 Stop mobileloket worker
+	start                Start altar worker
+	stop                 Stop altar worker
 // `

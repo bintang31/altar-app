@@ -1,7 +1,7 @@
 package main
 
 import (
-	"altar-app/cmd"
+	"altar-app/infrastructure/cmd"
 )
 
 func main() {

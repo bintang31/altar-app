@@ -11,6 +11,7 @@ import (
 	"os"
 )
 
+//API : Handler API Interfacing to FrontEnd
 func API() {
 	if err := godotenv.Load(); err != nil {
 		log.Println("no env gotten")

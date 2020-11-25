@@ -1,0 +1,57 @@
+{
+	"port": "1123",
+	"jwtSign": "secret",
+	"database": {
+		"mysql": {
+			"driver": "mysql",
+			"host": "localhost",
+			"user": "username",
+			"password": "password",
+			"db_name": "mobileloket",
+			"port": 3306,
+			"pool": {
+				"maxOpenConns": 100,
+				"maxIdleConns": 10,
+				"maxLifetime": 300
+			}
+		},
+		"postgres": {
+			"driver": "postgres",
+			"host": "103.117.207.140",
+			"user": "mobileloket",
+			"password": "password",
+			"db_name": "mobileloket",
+			"port": 5432,
+			"pool": {
+				"maxOpenConns": 100,
+				"maxIdleConns": 10,
+				"maxLifetime": 300
+			}
+		},
+		"amqp": {
+			"api_url": "http://localhost:15672",
+			"host": "localhost",
+			"port": 5672,
+			"user": "atlas",
+			"password": "Ikancucut182",
+			"reconnect_retry": 10,
+			"reconnect_interval": 5,
+			"queue_name": "mobileloket-process",
+			"debug": true,
+			"consumer_limit": 200,
+			"worker_limit": 500
+		}
+	},
+	"moduleloket": {
+		"endpoint": "http://etherwebservicev2-dev.limasakti.co.id:7033/",
+		"user": "mobileloket",
+		"password": "Mobile.Loket.Lite.2020",
+		"userloket": "MOBILELOKET"
+	},
+	"logdir": "log",
+	"dir.local": "/Users/andhikarestama/Documents/go/src/mobileloket-backend/images/",
+	"url.local": "http://localhost:1123/v1/api/images/",
+	"log_identifier": "mobileloket",
+	"log_max_age": 15,
+	"debug": true
+}
