@@ -1,9 +1,8 @@
 package cmd
 
 import (
-	//"altar-app/interfaces/routes"
-	"altar-app/application/config"
 	log "altar-app/infrastructure/logger"
+	"altar-app/interfaces/routes"
 	"fmt"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -25,10 +24,8 @@ var startCmd = &cobra.Command{
 	Use:   "start",
 	Short: "Start mobileloket http service",
 	Run: func(cmd *cobra.Command, args []string) {
-		//routes.API()
-		log.InfoLogHandler("OKE")
-		conf := config.LoadAppConfig("amqp")
-		fmt.Printf("nosamb :%+v\n", conf.Host)
+		routes.API()
+		log.InfoLogHandler("Start Service")
 	},
 }
 

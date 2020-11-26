@@ -40,6 +40,11 @@
 			"debug": true,
 			"consumer_limit": 200,
 			"worker_limit": 500
+		},
+		"redis": {
+			"host": "localhost",
+			"port": 6379,
+			"password": ""
 		}
 	},
 	"moduleloket": {

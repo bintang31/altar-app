@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"altar-app/application/config"
 	"altar-app/infrastructure/auth"
 	"altar-app/infrastructure/persistence"
 	"altar-app/interfaces/handler"
@@ -16,17 +17,20 @@ func API() {
 	if err := godotenv.Load(); err != nil {
 		log.Println("no env gotten")
 	}
-	dbdriver := os.Getenv("DB_DRIVER")
-	host := os.Getenv("DB_HOST")
-	password := os.Getenv("DB_PASSWORD")
-	user := os.Getenv("DB_USER")
-	dbname := os.Getenv("DB_NAME")
-	port := os.Getenv("DB_PORT")
+
+	conf := config.LoadAppConfig("postgres")
+	dbdriver := conf.Driver
+	host := conf.Host
+	password := conf.Password
+	user := conf.User
+	dbname := conf.DBName
+	port := conf.Port
 
 	//redis details
-	redisHost := os.Getenv("REDIS_HOST")
-	redisPort := os.Getenv("REDIS_PORT")
-	redisPassword := os.Getenv("REDIS_PASSWORD")
+	confRedis := config.LoadAppConfig("redis")
+	redisHost := confRedis.Host
+	redisPort := confRedis.Port
+	redisPassword := confRedis.Password
 
 	services, err := persistence.NewRepositories(dbdriver, user, password, port, host, dbname)
 	if err != nil {

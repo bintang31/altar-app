@@ -21,6 +21,7 @@ require (
 	github.com/spf13/cobra v1.1.1
 	github.com/spf13/viper v1.7.0
 	github.com/streadway/amqp v1.0.0 // indirect
+	github.com/stretchr/testify v1.4.0
 	github.com/twinj/uuid v1.0.0
 	golang.org/x/crypto v0.0.0-20191205180655-e7c4368fe9dd
 	gopkg.in/robfig/cron.v2 v2.0.0-20150107220207-be2e0b0deed5
