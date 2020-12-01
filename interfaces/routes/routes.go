@@ -48,6 +48,8 @@ func API() {
 
 	users := interfaces.NewUsers(services.User, redisService.Auth, tk)
 	roles := interfaces.NewRoles(services.Role, redisService.Auth, tk)
+	pelanggans := interfaces.NewPelanggans(services.Pelanggan, services.User, redisService.Auth, tk)
+	penagihans := interfaces.NewPenagihans(services.Penagihan, services.User, redisService.Auth, tk)
 	authenticate := interfaces.NewAuthenticate(services.User, redisService.Auth, tk)
 
 	r := gin.Default()
@@ -60,6 +62,12 @@ func API() {
 
 	//role routes
 	r.GET("/roles", middleware.AuthMiddleware(), roles.GetRoles)
+
+	//pelanggans routes
+	r.GET("/pelanggans", middleware.AuthMiddleware(), pelanggans.GetPelanggans)
+
+	//penagihans routes
+	r.GET("/penagihans", middleware.AuthMiddleware(), penagihans.GetPenagihans)
 
 	//authentication routes
 	r.POST("/login", authenticate.Login)

@@ -8,18 +8,21 @@ import (
 	"time"
 )
 
+//User : Struct
 type User struct {
 	ID        uint64     `gorm:"primary_key;auto_increment" json:"id"`
-	UserName  string     `gorm:"size:100;not null;" json:"user_name"`
+	Username  string     `gorm:"size:100;not null;" json:"username"`
 	FirstName string     `gorm:"size:100;not null;" json:"first_name"`
 	LastName  string     `gorm:"size:100;not null;" json:"last_name"`
 	Email     string     `gorm:"size:100;not null;unique" json:"email"`
+	Pdam      string     `gorm:"size:100;not null;unique" json:"pdam"`
 	Password  string     `gorm:"size:100;not null;" json:"password"`
 	CreatedAt time.Time  `gorm:"default:CURRENT_TIMESTAMP" json:"created_at"`
 	UpdatedAt time.Time  `gorm:"default:CURRENT_TIMESTAMP" json:"updated_at"`
 	DeletedAt *time.Time `json:"deleted_at,omitempty"`
 }
 
+//PublicUser : Struct
 type PublicUser struct {
 	ID        uint64 `gorm:"primary_key;auto_increment" json:"id"`
 	FirstName string `gorm:"size:100;not null;" json:"first_name"`
@@ -36,9 +39,10 @@ func (u *User) BeforeSave() error {
 	return nil
 }
 
+//Users : Struct List All User
 type Users []User
 
-//So that we dont expose the user's email address and password to the world
+//PublicUsers : So that we dont expose the user's email address and password to the world
 func (users Users) PublicUsers() []interface{} {
 	result := make([]interface{}, len(users))
 	for index, user := range users {
@@ -47,7 +51,7 @@ func (users Users) PublicUsers() []interface{} {
 	return result
 }
 
-//So that we dont expose the user's email address and password to the world
+//PublicUser : So that we dont expose the user's email address and password to the world
 func (u *User) PublicUser() interface{} {
 	return &PublicUser{
 		ID:        u.ID,
@@ -90,6 +94,13 @@ func (u *User) Validate(action string) map[string]string {
 			if err = checkmail.ValidateFormat(u.Email); err != nil {
 				errorMessages["invalid_email"] = "please provide a valid email"
 			}
+		}
+	case "login_username":
+		if u.Password == "" {
+			errorMessages["password_required"] = "password is required"
+		}
+		if u.Username == "" {
+			errorMessages["username_required"] = "username is required"
 		}
 	case "forgotpassword":
 		if u.Email == "" {

@@ -9,10 +9,16 @@ import (
 
 //UserAppInterface is a mock user app interface
 type UserAppInterface struct {
-	SaveUserFn                  func(*entity.User) (*entity.User, map[string]string)
-	GetUsersFn                  func() ([]entity.User, error)
-	GetUserFn                   func(uint64) (*entity.User, error)
-	GetUserByEmailAndPasswordFn func(*entity.User) (*entity.User, map[string]string)
+	SaveUserFn                      func(*entity.User) (*entity.User, map[string]string)
+	GetUsersFn                      func() ([]entity.User, error)
+	GetUserFn                       func(uint64) (*entity.User, error)
+	GetUserByEmailAndPasswordFn     func(*entity.User) (*entity.User, map[string]string)
+	GetUserByUserNamelAndPasswordFn func(*entity.User) (*entity.User, map[string]string)
+}
+
+//RoleAppInterface is a mock role app interface
+type RoleAppInterface struct {
+	GetRolesFn func() ([]entity.Role, error)
 }
 
 //SaveUser calls the SaveUserFn
@@ -25,6 +31,11 @@ func (u *UserAppInterface) GetUsers() ([]entity.User, error) {
 	return u.GetUsersFn()
 }
 
+//GetRolesFn calls the GetRoles
+func (rs *RoleAppInterface) GetRoles() ([]entity.Role, error) {
+	return rs.GetRolesFn()
+}
+
 //GetUserFn calls the GetUser
 func (u *UserAppInterface) GetUser(userId uint64) (*entity.User, error) {
 	return u.GetUserFn(userId)
@@ -33,6 +44,10 @@ func (u *UserAppInterface) GetUser(userId uint64) (*entity.User, error) {
 //GetUserByEmailAndPasswordFn calls the GetUserByEmailAndPassword
 func (u *UserAppInterface) GetUserByEmailAndPassword(user *entity.User) (*entity.User, map[string]string) {
 	return u.GetUserByEmailAndPasswordFn(user)
+}
+
+func (u *UserAppInterface) GetUserByUserNamelAndPassword(user *entity.User) (*entity.User, map[string]string) {
+	return u.GetUserByUserNamelAndPasswordFn(user)
 }
 
 //AuthInterface is a mock auth interface

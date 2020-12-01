@@ -111,7 +111,7 @@ func (rb *ResponseBuilder) SetParams(key string, data interface{}) *ResponseBuil
 }
 
 func GetVersion() VersionApp {
-	var directory = "/Users/andhikarestama/Documents/go/src/mobileloket-app/infrastructure/response"
+	var directory = "./infrastructure/response"
 	var e error
 
 	var version_obj VersionApp
@@ -128,7 +128,7 @@ func GetVersion() VersionApp {
 }
 
 func GetMessage(str string) (map[string]interface{}, bool) {
-	var directory = "/Users/andhikarestama/Documents/go/src/mobileloket-app/infrastructure/response"
+	var directory = "./infrastructure/response"
 	var e error
 
 	var mssg_obj ResponseApp
@@ -172,7 +172,7 @@ func GetMessage(str string) (map[string]interface{}, bool) {
 }
 
 func GetErrorMessage() map[string]interface{} {
-	var directory = "/Users/andhikarestama/Documents/go/src/mobileloket-app/infrastructure/response"
+	var directory = "./infrastructure/response"
 	var e error
 
 	var err_obj MessageApp

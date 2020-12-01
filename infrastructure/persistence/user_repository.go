@@ -86,3 +86,25 @@ func (r *UserRepo) GetUserByEmailAndPassword(u *entity.User) (*entity.User, map[
 	}
 	return &user, nil
 }
+
+//GetUserByUserNamelAndPassword : Get User Profile by Username
+func (r *UserRepo) GetUserByUserNamelAndPassword(u *entity.User) (*entity.User, map[string]string) {
+	var user entity.User
+	dbErr := map[string]string{}
+	err := r.db.Debug().Where("username = ?", u.Username).Take(&user).Error
+	if gorm.IsRecordNotFoundError(err) {
+		dbErr["no_user"] = "user not found"
+		return nil, dbErr
+	}
+	if err != nil {
+		dbErr["db_error"] = "database error"
+		return nil, dbErr
+	}
+	//Verify the password
+	err = security.VerifyPassword(user.Password, u.Password)
+	if err != nil && err == bcrypt.ErrMismatchedHashAndPassword {
+		dbErr["incorrect_password"] = "incorrect password"
+		return nil, dbErr
+	}
+	return &user, nil
+}

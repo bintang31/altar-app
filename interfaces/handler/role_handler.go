@@ -4,7 +4,6 @@ import (
 	"altar-app/application"
 	"altar-app/domain/entity"
 	"altar-app/infrastructure/auth"
-	"altar-app/infrastructure/response"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -52,7 +51,5 @@ func (r *Roles) GetRoles(c *gin.Context) {
 		return
 	}
 
-	rb := &response.ResponseBuilder{}
-
-	c.JSON(http.StatusOK, rb.SetResponse("030102").SetData(roles).Build(c))
+	c.JSON(http.StatusOK, roles)
 }

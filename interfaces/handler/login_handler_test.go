@@ -72,7 +72,7 @@ func Test_Login_Invalid_Data(t *testing.T) {
 
 func Test_Login_Success(t *testing.T) {
 
-	userApp.GetUserByEmailAndPasswordFn = func(*entity.User) (*entity.User, map[string]string) {
+	userApp.GetUserByUserNamelAndPasswordFn = func(*entity.User) (*entity.User, map[string]string) {
 		return &entity.User{
 			ID:        1,
 			FirstName: "victor",
@@ -93,7 +93,7 @@ func Test_Login_Success(t *testing.T) {
 		return nil
 	}
 
-	inputJSON := `{"email": "steven@example.com","password": "password"}`
+	inputJSON := `{"username": "user01","password": "password"}`
 	r := gin.Default()
 	r.POST("/login", au.Login)
 	req, err := http.NewRequest(http.MethodPost, "/login", bytes.NewBufferString(inputJSON))
