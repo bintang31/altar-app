@@ -27,7 +27,7 @@ type AMQPConsumer struct {
 }
 
 func (cons *AMQPConsumer) CreateServer(queueName string) {
-	conf := config.LoadAppConfig("aqmp")
+	conf := config.LoadAppConfig("amqp")
 	amqp_url := "amqp://" + conf.User + ":" + conf.Password + "@" + conf.Host + ":" + conf.Port
 	cfg := dispatcher.ServerConfig{
 		AMQPConnectionString:        amqp_url,

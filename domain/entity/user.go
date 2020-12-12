@@ -17,6 +17,7 @@ type User struct {
 	Email     string     `gorm:"size:100;not null;unique" json:"email"`
 	Pdam      string     `gorm:"size:100;not null;unique" json:"pdam"`
 	Password  string     `gorm:"size:100;not null;" json:"password"`
+	Pin       int        `gorm:"size:255;not null;" json:"pin"`
 	CreatedAt time.Time  `gorm:"default:CURRENT_TIMESTAMP" json:"created_at"`
 	UpdatedAt time.Time  `gorm:"default:CURRENT_TIMESTAMP" json:"updated_at"`
 	DeletedAt *time.Time `json:"deleted_at,omitempty"`
@@ -60,6 +61,7 @@ func (u *User) PublicUser() interface{} {
 	}
 }
 
+//Prepare : prepare html response
 func (u *User) Prepare() {
 	u.FirstName = html.EscapeString(strings.TrimSpace(u.FirstName))
 	u.LastName = html.EscapeString(strings.TrimSpace(u.LastName))
@@ -68,6 +70,7 @@ func (u *User) Prepare() {
 	u.UpdatedAt = time.Now()
 }
 
+//Validate : user validation by Action
 func (u *User) Validate(action string) map[string]string {
 	var errorMessages = make(map[string]string)
 	var err error

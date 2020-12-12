@@ -1,6 +1,10 @@
 package cmd
 
 import (
+	"altar-app/application/config"
+	logger "altar-app/infrastructure/logger"
+	"altar-app/infrastructure/queue/worker"
+	"altar-app/interfaces/scheduler"
 	"github.com/spf13/cobra"
 	"log"
 	"os"
@@ -26,7 +30,21 @@ var workerHandler = func(cmd *cobra.Command, args []string) {
 	option := args[0]
 
 	log.Println(option)
-
+	conf := config.LoadAppConfig("amqp")
+	queueName := conf.QueueName
+	workerLimit := conf.WorkerLimit
+	var consumer worker.AMQPConsumer = worker.AMQPConsumer{Consumer: make(map[string]worker.AMQPWorker)}
+	switch option {
+	case "start":
+		interfaces.InitCronInfo()
+		ok := consumer.StartWorker(queueName, workerLimit)
+		if ok {
+			logger.InfoLogHandler("Worker Running")
+		}
+	case "stop":
+		consumer.StopWorker(queueName)
+		logger.InfoLogHandler("Worker Stopped")
+	}
 }
 
 var workerUsage = `

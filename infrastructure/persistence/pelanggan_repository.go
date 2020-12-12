@@ -32,3 +32,29 @@ func (r *PelangganRepo) GetPelanggans() ([]entity.Pelanggan, error) {
 	}
 	return pelanggans, nil
 }
+
+//GetTagihanAirPelanggansByNosamb : Get Data Tagihan Air by Nosamb
+func (r *PelangganRepo) GetTagihanAirPelanggansByNosamb(nosamb string) ([]entity.Drd, error) {
+	var tagihanair []entity.Drd
+	err := r.db.Debug().Where("nosamb = ?", nosamb).Find(&tagihanair).Error
+	if err != nil {
+		return nil, err
+	}
+	if gorm.IsRecordNotFoundError(err) {
+		return nil, errors.New("pelanggan not found")
+	}
+	return tagihanair, nil
+}
+
+//GetTagihanNonAirPelanggansByNosamb : Get Data Tagihan Nonair by Nosamb
+func (r *PelangganRepo) GetTagihanNonAirPelanggansByNosamb(nosamb string) ([]entity.Nonair, error) {
+	var tagihannonair []entity.Nonair
+	err := r.db.Debug().Where("nomor = ?", nosamb).Find(&tagihannonair).Error
+	if err != nil {
+		return nil, err
+	}
+	if gorm.IsRecordNotFoundError(err) {
+		return nil, errors.New("pelanggan not found")
+	}
+	return tagihannonair, nil
+}

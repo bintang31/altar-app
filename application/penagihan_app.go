@@ -16,6 +16,8 @@ var _ PenagihanAppInterface = &penagihanApp{}
 type PenagihanAppInterface interface {
 	GetPenagihans() ([]entity.Penagihan, error)
 	GetPenagihansByUserPDAM(uint64) ([]entity.PenagihansSrKolektif, error)
+	GetPenagihanByNosamb(string) (*entity.Penagihan, error)
+	BayarTagihanByNosamb(*entity.Bayar) (*entity.ResponseLoket, map[string]string)
 }
 
 func (p *penagihanApp) GetPenagihans() ([]entity.Penagihan, error) {
@@ -24,4 +26,12 @@ func (p *penagihanApp) GetPenagihans() ([]entity.Penagihan, error) {
 
 func (p *penagihanApp) GetPenagihansByUserPDAM(userID uint64) ([]entity.PenagihansSrKolektif, error) {
 	return p.pn.GetPenagihansByUserPDAM(userID)
+}
+
+func (p *penagihanApp) GetPenagihanByNosamb(nosamb string) (*entity.Penagihan, error) {
+	return p.pn.GetPenagihanByNosamb(nosamb)
+}
+
+func (p *penagihanApp) BayarTagihanByNosamb(u *entity.Bayar) (*entity.ResponseLoket, map[string]string) {
+	return p.pn.BayarTagihanByNosamb(u)
 }

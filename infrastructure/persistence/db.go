@@ -15,6 +15,8 @@ type Repositories struct {
 	Role      repository.RoleRepository
 	Pelanggan repository.PelangganRepository
 	Penagihan repository.PenagihanRepository
+	Petugas   repository.PetugasRepository
+	Transaksi repository.TransactionRepository
 	db        *gorm.DB
 }
 
@@ -32,6 +34,8 @@ func NewRepositories(Dbdriver, DbUser, DbPassword, DbPort, DbHost, DbName string
 		Role:      NewRoleRepository(db),
 		Pelanggan: NewPelangganRepository(db),
 		Penagihan: NewPenagihanRepository(db),
+		Petugas:   NewPetugasRepository(db),
+		Transaksi: NewTransactionRepository(db),
 		db:        db,
 	}, nil
 }

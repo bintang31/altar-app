@@ -19,7 +19,7 @@ func failOnError(err error, msg string) {
 
 //CreateQueue : function to create queue
 func (prod *AMQPProducer) CreateQueue(queueName string) {
-	conf := config.LoadAppConfig("aqmp")
+	conf := config.LoadAppConfig("amqp")
 	amqp_url := "amqp://" + conf.User + ":" + conf.Password + "@" + conf.Host + ":" + conf.Port
 	cfg := dispatcher.ServerConfig{
 		AMQPConnectionString:        amqp_url,

@@ -48,36 +48,48 @@ func API() {
 
 	users := interfaces.NewUsers(services.User, redisService.Auth, tk)
 	roles := interfaces.NewRoles(services.Role, redisService.Auth, tk)
-	pelanggans := interfaces.NewPelanggans(services.Pelanggan, services.User, redisService.Auth, tk)
+	pelanggans := interfaces.NewPelanggans(services.Pelanggan, services.Penagihan, services.User, redisService.Auth, tk)
 	penagihans := interfaces.NewPenagihans(services.Penagihan, services.User, redisService.Auth, tk)
+	petugas := interfaces.NewPetugass(services.Petugas, services.Penagihan, services.User, redisService.Auth, tk)
+	transactions := interfaces.NewTransactions(services.Transaksi, services.User, redisService.Auth, tk)
 	authenticate := interfaces.NewAuthenticate(services.User, redisService.Auth, tk)
 
 	r := gin.Default()
 	r.Use(middleware.CORSMiddleware()) //For CORS
-
+	v1 := r.Group("/v1/api")
 	//user routes
-	r.POST("/users", middleware.AuthMiddleware(), users.SaveUser)
-	r.GET("/users", users.GetUsers)
-	r.GET("/users/:user_id", users.GetUser)
+	v1.POST("/users", middleware.AuthMiddleware(), users.SaveUser)
+	v1.GET("/users", users.GetUsers)
+	v1.GET("/users/:user_id", users.GetUser)
 
 	//role routes
-	r.GET("/roles", middleware.AuthMiddleware(), roles.GetRoles)
+	v1.GET("/roles", middleware.AuthMiddleware(), roles.GetRoles)
 
 	//pelanggans routes
-	r.GET("/pelanggans", middleware.AuthMiddleware(), pelanggans.GetPelanggans)
+	v1.GET("/pelanggans", middleware.AuthMiddleware(), pelanggans.GetPelanggans)
+	v1.GET("/pelanggans/:nosamb/tagihan", middleware.AuthMiddleware(), pelanggans.GetTagihanPelanggan)
 
 	//penagihans routes
-	r.GET("/penagihans", middleware.AuthMiddleware(), penagihans.GetPenagihans)
+	v1.GET("/penagihans", middleware.AuthMiddleware(), penagihans.GetPenagihans)
+	v1.POST("/bayar_sync", middleware.AuthMiddleware(), penagihans.BayarTagihanPelangganBulk)
+	v1.POST("/bayar", middleware.AuthMiddleware(), penagihans.BayarTagihanPelanggan)
+
+	//transactions routes
+	v1.POST("/transactions", middleware.AuthMiddleware(), transactions.GetTransactions)
+
+	//petugas routes
+	v1.GET("/petugas_data", middleware.AuthMiddleware(), petugas.GetDataPetugas)
+	v1.GET("/petugas/profile", middleware.AuthMiddleware(), petugas.GetProfilePetugas)
 
 	//authentication routes
-	r.POST("/login", authenticate.Login)
-	r.POST("/logout", authenticate.Logout)
-	r.POST("/refresh", authenticate.Refresh)
+	v1.POST("/login", authenticate.Login)
+	v1.POST("/logout", authenticate.Logout)
+	v1.POST("/refresh", authenticate.Refresh)
 
 	//Starting the application
 	appPort := os.Getenv("PORT") //using heroku host
 	if appPort == "" {
-		appPort = "8888" //localhost
+		appPort = "1123" //localhost
 	}
 	log.Fatal(r.Run(":" + appPort))
 }

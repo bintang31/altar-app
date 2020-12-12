@@ -26,7 +26,7 @@
             "response": {
                 "code": "20000000",
                 "status": "SUCCESS",
-                "message": "Get List All PDAM"
+                "message": "Get All Data Petugas"
             },
             "properties": {}
         },

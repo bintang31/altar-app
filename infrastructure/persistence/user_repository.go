@@ -66,6 +66,7 @@ func (r *UserRepo) GetUsers() ([]entity.User, error) {
 	return users, nil
 }
 
+//GetUserByEmailAndPassword :  Get User Profile by email and password
 func (r *UserRepo) GetUserByEmailAndPassword(u *entity.User) (*entity.User, map[string]string) {
 	var user entity.User
 	dbErr := map[string]string{}

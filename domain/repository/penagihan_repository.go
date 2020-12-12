@@ -8,4 +8,6 @@ import (
 type PenagihanRepository interface {
 	GetPenagihans() ([]entity.Penagihan, error)
 	GetPenagihansByUserPDAM(uint64) ([]entity.PenagihansSrKolektif, error)
+	GetPenagihanByNosamb(string) (*entity.Penagihan, error)
+	BayarTagihanByNosamb(*entity.Bayar) (*entity.ResponseLoket, map[string]string)
 }

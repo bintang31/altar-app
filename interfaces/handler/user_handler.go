@@ -59,6 +59,7 @@ func (s *Users) GetUsers(c *gin.Context) {
 	c.JSON(http.StatusOK, users.PublicUsers())
 }
 
+//GetUser : get user By ID
 func (s *Users) GetUser(c *gin.Context) {
 	userId, err := strconv.ParseUint(c.Param("user_id"), 10, 64)
 	if err != nil {

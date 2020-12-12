@@ -18,7 +18,7 @@ type Authenticate struct {
 	tk auth.TokenInterface
 }
 
-//Authenticate constructor
+//NewAuthenticate constructor
 func NewAuthenticate(uApp application.UserAppInterface, rd auth.AuthInterface, tk auth.TokenInterface) *Authenticate {
 	return &Authenticate{
 		us: uApp,

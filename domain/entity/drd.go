@@ -6,3 +6,6 @@ type Drd struct {
 	Periode string  `gorm:"size:100;not null;" json:"periode"`
 	Total   float64 `gorm:"size:100;null;" json:"total"`
 }
+
+//Drds : Struct list DRD
+type Drds []Drd
