@@ -59,14 +59,20 @@ func (s *Users) GetUsers(c *gin.Context) {
 	c.JSON(http.StatusOK, users.PublicUsers())
 }
 
-//GetUser : get user By ID
+// GetUser godoc
+// @Summary Retrieves user based on given ID
+// @Produce json
+// @Param id path integer true "User ID"
+// @Success 200 {object} entity.User
+// @Router /users/{id} [get]
+// GetUser : get user By ID
 func (s *Users) GetUser(c *gin.Context) {
-	userId, err := strconv.ParseUint(c.Param("user_id"), 10, 64)
+	userID, err := strconv.ParseUint(c.Param("user_id"), 10, 64)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
-	user, err := s.us.GetUser(userId)
+	user, err := s.us.GetUser(userID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return

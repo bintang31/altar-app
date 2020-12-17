@@ -11,7 +11,11 @@ type Transaction struct {
 	TotalDrd  float64   `gorm:"size:100;not null;" json:"total_drd"`
 	Denda     float64   `gorm:"size:100;not null;" json:"denda"`
 	Pelanggan string    `json:"pelanggan" gorm:"null; size:100"`
+	Status    int       `gorm:"size:100;not null;" json:"status"`
 	Total     float64   `gorm:"size:100;not null;" json:"total"`
+	Pdam      string    `json:"pdam" gorm:"not null; size:100"`
+	Jenis     string    `json:"jenis" gorm:"not null; size:100"`
+	CreatedBy uint64    `gorm:"size:20;not null;" json:"created_by"`
 	CreatedAt time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"created_at"`
 	UpdatedAt time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"updated_at"`
 }

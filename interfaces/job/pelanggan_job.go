@@ -3,8 +3,10 @@ package interfaces
 import (
 	"altar-app/application"
 	"altar-app/application/config"
+	"altar-app/domain/entity"
 	"altar-app/infrastructure/queue/producer"
 	"encoding/json"
+	"fmt"
 )
 
 //PelangganJobs struct defines the dependencies that will be used
@@ -33,4 +35,21 @@ func (p *PelangganJobs) GetPelangganAlls() {
 	//queue.SendWithParam(param)
 	data, _ := json.Marshal(payload)
 	producer.Producer.CreateItem(conf.QueueName, string(data))
+}
+
+//InquiryLoket : InquiryLoket Pelanggan
+func (p *PelangganJobs) InquiryLoket() {
+	var input = entity.InputInquiryPelanggan{}
+	input.Nosamb = "091310001"
+	input.Pdam = "MJI"
+	var err error
+	tagihanair := entity.RekairDetails{}
+
+	tagihanair, err = p.pl.InquiryLoketTagihanAirByNosamb(&input)
+
+	if err != nil {
+		fmt.Printf("userID :%+v\n", err)
+		return
+	}
+	fmt.Printf("userID :%+v\n", tagihanair)
 }

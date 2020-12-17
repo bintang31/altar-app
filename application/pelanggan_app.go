@@ -17,6 +17,7 @@ type PelangganAppInterface interface {
 	GetPelanggans() ([]entity.Pelanggan, error)
 	GetTagihanAirPelanggansByNosamb(string) ([]entity.Drd, error)
 	GetTagihanNonAirPelanggansByNosamb(string) ([]entity.Nonair, error)
+	InquiryLoketTagihanAirByNosamb(*entity.InputInquiryPelanggan) ([]entity.RekairDetail, error)
 }
 
 func (p *pelangganApp) GetPelanggans() ([]entity.Pelanggan, error) {
@@ -29,4 +30,8 @@ func (p *pelangganApp) GetTagihanAirPelanggansByNosamb(nosamb string) ([]entity.
 
 func (p *pelangganApp) GetTagihanNonAirPelanggansByNosamb(nosamb string) ([]entity.Nonair, error) {
 	return p.pl.GetTagihanNonAirPelanggansByNosamb(nosamb)
+}
+
+func (p *pelangganApp) InquiryLoketTagihanAirByNosamb(u *entity.InputInquiryPelanggan) ([]entity.RekairDetail, error) {
+	return p.pl.InquiryLoketTagihanAirByNosamb(u)
 }

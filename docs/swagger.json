@@ -1,0 +1,186 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "contact": {},
+        "license": {}
+    },
+    "paths": {
+        "/get_data": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Retrieves petigas data",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/entity.PetugasData"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/{id}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Retrieves user based on given ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "User ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/entity.User"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "entity.Drd": {
+            "type": "object",
+            "properties": {
+                "nosamb": {
+                    "type": "string"
+                },
+                "periode": {
+                    "type": "string"
+                },
+                "total": {
+                    "type": "number"
+                }
+            }
+        },
+        "entity.PenagihansSrKolektif": {
+            "type": "object",
+            "properties": {
+                "alamat": {
+                    "type": "string"
+                },
+                "kode_pdam": {
+                    "type": "string"
+                },
+                "kolektif": {
+                    "type": "string"
+                },
+                "nama": {
+                    "type": "string"
+                },
+                "nosamb": {
+                    "type": "string"
+                },
+                "notelp": {
+                    "type": "string"
+                },
+                "pdam": {
+                    "type": "string"
+                },
+                "periode_kolektif": {
+                    "type": "string"
+                },
+                "periode_tagihan": {
+                    "type": "string"
+                },
+                "rayon_name": {
+                    "type": "string"
+                },
+                "status_billing": {
+                    "type": "string"
+                },
+                "status_kolektif": {
+                    "type": "string"
+                },
+                "status_pelanggan": {
+                    "type": "string"
+                },
+                "tagihan_air": {
+                    "type": "integer"
+                },
+                "tagihan_nonair": {
+                    "type": "integer"
+                },
+                "total_administrasi": {
+                    "type": "number"
+                },
+                "total_denda": {
+                    "type": "number"
+                },
+                "total_tagihan": {
+                    "type": "number"
+                },
+                "total_tagihan_air": {
+                    "type": "number"
+                },
+                "total_tagihan_nonair": {
+                    "type": "number"
+                }
+            }
+        },
+        "entity.PetugasData": {
+            "type": "object",
+            "properties": {
+                "penagihan_billing": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/entity.Drd"
+                    }
+                },
+                "penagihan_pelanggan": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/entity.PenagihansSrKolektif"
+                    }
+                }
+            }
+        },
+        "entity.User": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "deleted_at": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "first_name": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "last_name": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "pdam": {
+                    "type": "string"
+                },
+                "pin": {
+                    "type": "integer"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}

@@ -6,6 +6,7 @@ import (
 	//Gorm POSTGRES
 	"altar-app/domain/entity"
 	"altar-app/domain/repository"
+	//import postgres GORM
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 )
 

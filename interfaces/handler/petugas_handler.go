@@ -30,7 +30,12 @@ func NewPetugass(pt application.PetugasAppInterface, pn application.PenagihanApp
 	}
 }
 
-//GetDataPetugas : Get All Data Petugas
+// GetDataPetugas godoc
+// @Summary Retrieves petugas data
+// @Produce json
+// @success 200 @Success 200 {object} entity.PetugasData
+// @Router /get_data [get]
+// GetDataPetugas : Get All Data Petugas
 func (pts *Petugass) GetDataPetugas(c *gin.Context) {
 	var err error
 	//Check if the user is authenticated first
@@ -64,9 +69,9 @@ func (pts *Petugass) GetDataPetugas(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return
 	}
-	var petugasalldata = make(map[string]interface{})
-	petugasalldata["penagihan_pelanggan"] = penagihans
-	petugasalldata["penagihan_billing"] = tagihanair
+	petugasalldata := entity.PetugasData{}
+	petugasalldata.PenagihanPelanggan = penagihans
+	petugasalldata.PenagihanBilling = tagihanair
 	rb := &response.ResponseBuilder{}
 
 	c.JSON(http.StatusOK, rb.SetResponse("010101").SetData(petugasalldata).Build(c))

@@ -7,4 +7,5 @@ import (
 //TransactionRepository : Transaction collection of methods that the infrastructure
 type TransactionRepository interface {
 	GetTransactions() ([]entity.Transaction, error)
+	SaveTransactions(*entity.Transaction) (*entity.Transaction, map[string]string)
 }

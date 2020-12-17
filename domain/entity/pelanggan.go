@@ -11,3 +11,32 @@ type Pelanggan struct {
 
 //Pelanggans : Struct list Pelanggan
 type Pelanggans []Pelanggan
+
+//InputInquiryPelanggan : Struct Entity InputInquiryPelanggan
+type InputInquiryPelanggan struct {
+	Nosamb string `json:"nosamb"`
+	Pdam   string `json:"pdam"`
+}
+
+//InquiryCollection : Struct Entity InquiryCollection
+type InquiryCollection struct {
+	Rekair       []RekairDetail `json:"rekair"`
+	Totaltagihan int            `json:"totaltagihan"`
+}
+
+//RekairDetail : Struct Inquiry rekening air
+type RekairDetail struct {
+	Alamat         string  `json:"alamat"`
+	Administrasi   float64 `json:"administrasi"`
+	Periode        string  `json:"periode"`
+	Denda          float64 `json:"denda"`
+	Retribusi      float64 `json:"retribusi"`
+	BiayaPemakaian float64 `json:"biayapemakaian"`
+	Tagihan        float64 `json:"tagihan"`
+	Bulan          string  `json:"bulan"`
+	Nama           string  `json:"nama"`
+	Nosamb         string  `json:"nosamb"`
+}
+
+//RekairDetails : Struct list Pelanggan
+type RekairDetails []RekairDetail

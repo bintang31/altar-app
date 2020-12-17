@@ -9,4 +9,5 @@ type PelangganRepository interface {
 	GetPelanggans() ([]entity.Pelanggan, error)
 	GetTagihanAirPelanggansByNosamb(string) ([]entity.Drd, error)
 	GetTagihanNonAirPelanggansByNosamb(string) ([]entity.Nonair, error)
+	InquiryLoketTagihanAirByNosamb(*entity.InputInquiryPelanggan) ([]entity.RekairDetail, error)
 }

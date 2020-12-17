@@ -112,3 +112,39 @@ func (r *PenagihanRepo) BayarTagihanByNosamb(u *entity.Bayar) (*entity.ResponseL
 
 	return &responseloket, nil
 }
+
+//GetPenagihanByParam : Get Penagihan by Param
+func (r *PenagihanRepo) GetPenagihanByParam(t *entity.PenagihansParams) ([]entity.PenagihansSrKolektif, error) {
+	var penagihan []entity.PenagihansSrKolektif
+	var err error
+	switch t.Filter {
+	case "SR":
+		err = r.db.Debug().Table("petugas_rayons").Select("penagihans_sr_kolektifs.nosamb, penagihans_sr_kolektifs.nama,penagihans_sr_kolektifs.pelanggan,penagihans_sr_kolektifs.notelp,penagihans_sr_kolektifs.golongan,penagihans_sr_kolektifs.kode_pdam,penagihans_sr_kolektifs.alamat,penagihans_sr_kolektifs.pdam,penagihans_sr_kolektifs.rayon_name,"+
+			"penagihans_sr_kolektifs.status_kolektif,penagihans_sr_kolektifs.status_pelanggan,penagihans_sr_kolektifs.tagihan_air,penagihans_sr_kolektifs.total_tagihan_air,penagihans_sr_kolektifs.tagihan_nonair,"+
+			"penagihans_sr_kolektifs.total_tagihan_nonair,penagihans_sr_kolektifs.total_tagihan,penagihans_sr_kolektifs.status_billing,penagihans_sr_kolektifs.periode_tagihan").Joins("join penagihans_sr_kolektifs ON penagihans_sr_kolektifs.kode_rayon = "+
+			"petugas_rayons.rayon").Where("petugas_rayons.petugas = ? AND penagihans_sr_kolektifs.status_billing = ? AND penagihans_sr_kolektifs.status_kolektif = ?", t.UserID, "BELUM TERBAYAR", "sambungan_rumah").Order("penagihans_sr_kolektifs.total_tagihan desc").Find(&penagihan).Error
+
+	default:
+		err = r.db.Debug().Table("petugas_rayons").Select("penagihans_sr_kolektifs.nosamb, penagihans_sr_kolektifs.nama,penagihans_sr_kolektifs.pelanggan,penagihans_sr_kolektifs.notelp,penagihans_sr_kolektifs.golongan,penagihans_sr_kolektifs.kode_pdam,penagihans_sr_kolektifs.alamat,penagihans_sr_kolektifs.pdam,penagihans_sr_kolektifs.rayon_name,"+
+			"penagihans_sr_kolektifs.status_kolektif,penagihans_sr_kolektifs.status_pelanggan,penagihans_sr_kolektifs.tagihan_air,penagihans_sr_kolektifs.total_tagihan_air,penagihans_sr_kolektifs.tagihan_nonair,"+
+			"penagihans_sr_kolektifs.total_tagihan_nonair,penagihans_sr_kolektifs.total_tagihan,penagihans_sr_kolektifs.status_billing,penagihans_sr_kolektifs.periode_tagihan").Joins("join penagihans_sr_kolektifs ON penagihans_sr_kolektifs.kode_rayon = "+
+			"petugas_rayons.rayon").Where("petugas_rayons.petugas = ? AND penagihans_sr_kolektifs.status_billing = ?", t.UserID, "BELUM TERBAYAR").Order("penagihans_sr_kolektifs.total_tagihan desc").Find(&penagihan).Error
+
+	}
+
+	config.Paging(&config.Param{
+		DB:      r.db,
+		Page:    t.Page,
+		Limit:   5,
+		OrderBy: []string{"penagihans_sr_kolektifs.total_tagihan desc"},
+		ShowSQL: true,
+	}, &penagihan)
+
+	if err != nil {
+		return nil, err
+	}
+	if gorm.IsRecordNotFoundError(err) {
+		return nil, errors.New("pelanggan not found")
+	}
+	return penagihan, nil
+}

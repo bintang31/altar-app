@@ -23,7 +23,7 @@ func InitCronInfo() {
 	}
 	defer services.Close()
 	pelanggans := interfaces.NewPelangganJobs(services.Pelanggan, services.Penagihan, services.User)
-	_, _ = c.AddFunc("2 * * * * *", pelanggans.GetPelangganAlls)
+	_, _ = c.AddFunc("2 * * * * *", pelanggans.InquiryLoket)
 	//_, _ = c.AddFunc("15 * * * * *", job.CronExportData)
 	//_, _ = c.AddFunc("15 * * * * *", job.CronUploadData)
 	//_, _ = c.AddFunc("5 * * * *", func() { fmt.Println("Every 5 minutes" + time.Now().Format("2006-01-02T00:00:00+07:00")) })

@@ -16,15 +16,17 @@ import (
 type Penagihans struct {
 	pn application.PenagihanAppInterface
 	us application.UserAppInterface
+	tr application.TransactionsAppInterface
 	rd auth.AuthInterface
 	tk auth.TokenInterface
 }
 
 //NewPenagihans constructor
-func NewPenagihans(pn application.PenagihanAppInterface, us application.UserAppInterface, rd auth.AuthInterface, tk auth.TokenInterface) *Penagihans {
+func NewPenagihans(pn application.PenagihanAppInterface, us application.UserAppInterface, tr application.TransactionsAppInterface, rd auth.AuthInterface, tk auth.TokenInterface) *Penagihans {
 	return &Penagihans{
 		pn: pn,
 		us: us,
+		tr: tr,
 		rd: rd,
 		tk: tk,
 	}
@@ -53,8 +55,16 @@ func (p *Penagihans) GetPenagihans(c *gin.Context) {
 	}
 	fmt.Printf("userID :%+v\n", user.ID)
 	penagihans := entity.PenagihansSrKolektifs{} //customize user
+	var paramFilter *entity.PenagihansParams
+	if err := c.ShouldBindQuery(&paramFilter); err != nil {
+		c.JSON(http.StatusUnprocessableEntity, gin.H{
+			"invalid_filter": "invalid param filter",
+		})
+		return
+	}
+	paramFilter.UserID = userID
 	//us, err = application.UserApp.GetUsers()
-	penagihans, err = p.pn.GetPenagihansByUserPDAM(user.ID)
+	penagihans, err = p.pn.GetPenagihanByParam(paramFilter)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return
@@ -78,6 +88,7 @@ func (p *Penagihans) BayarTagihanPelanggan(c *gin.Context) {
 	}
 	var penagihan *entity.Penagihan
 	var responseloket *entity.ResponseLoket
+	var transactions *entity.Transaction
 	var tokenErr = map[string]string{}
 	var err error
 	//Check if the user is authenticated first
@@ -104,9 +115,24 @@ func (p *Penagihans) BayarTagihanPelanggan(c *gin.Context) {
 		return
 	}
 	penagihan, err = p.pn.GetPenagihanByNosamb(postDataTerima.Nosamb)
-	fmt.Printf("userID :%+v\n", penagihan.Nama)
+	fmt.Printf("Penagihan :%+v\n", penagihan)
 	postDataTerima.Pdam = user.Pdam
 	responseloket, tokenErr = p.pn.BayarTagihanByNosamb(postDataTerima)
+	if tokenErr != nil {
+		c.JSON(http.StatusInternalServerError, tokenErr)
+		return
+	}
+
+	var trxInsert = entity.Transaction{}
+	trxInsert.Pelanggan = penagihan.Nosamb
+	trxInsert.TotalDrd = penagihan.TotalTagihan
+	trxInsert.Denda = penagihan.TotalTagihan
+	trxInsert.Total = penagihan.TotalTagihan
+	trxInsert.Status = 2
+	trxInsert.Pdam = penagihan.KodePdam
+	trxInsert.CreatedBy = user.ID
+	trxInsert.Jenis = penagihan.StatusKolektif
+	transactions, tokenErr = p.tr.SaveTransactions(&trxInsert)
 	if tokenErr != nil {
 		c.JSON(http.StatusInternalServerError, tokenErr)
 		return
@@ -114,6 +140,7 @@ func (p *Penagihans) BayarTagihanPelanggan(c *gin.Context) {
 	fmt.Printf("Response From Loket :%+v\n", responseloket)
 	var penagihanPelanggan = make(map[string]interface{})
 	penagihanPelanggan["penagihan_pelanggan"] = postDataTerima
+	penagihanPelanggan["transactions"] = transactions
 	rb := &response.ResponseBuilder{}
 
 	c.JSON(http.StatusOK, rb.SetResponse("030102").SetData(penagihanPelanggan).Build(c))

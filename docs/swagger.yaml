@@ -1,0 +1,120 @@
+definitions:
+  entity.Drd:
+    properties:
+      nosamb:
+        type: string
+      periode:
+        type: string
+      total:
+        type: number
+    type: object
+  entity.PenagihansSrKolektif:
+    properties:
+      alamat:
+        type: string
+      kode_pdam:
+        type: string
+      kolektif:
+        type: string
+      nama:
+        type: string
+      nosamb:
+        type: string
+      notelp:
+        type: string
+      pdam:
+        type: string
+      periode_kolektif:
+        type: string
+      periode_tagihan:
+        type: string
+      rayon_name:
+        type: string
+      status_billing:
+        type: string
+      status_kolektif:
+        type: string
+      status_pelanggan:
+        type: string
+      tagihan_air:
+        type: integer
+      tagihan_nonair:
+        type: integer
+      total_administrasi:
+        type: number
+      total_denda:
+        type: number
+      total_tagihan:
+        type: number
+      total_tagihan_air:
+        type: number
+      total_tagihan_nonair:
+        type: number
+    type: object
+  entity.PetugasData:
+    properties:
+      penagihan_billing:
+        items:
+          $ref: '#/definitions/entity.Drd'
+        type: array
+      penagihan_pelanggan:
+        items:
+          $ref: '#/definitions/entity.PenagihansSrKolektif'
+        type: array
+    type: object
+  entity.User:
+    properties:
+      created_at:
+        type: string
+      deleted_at:
+        type: string
+      email:
+        type: string
+      first_name:
+        type: string
+      id:
+        type: integer
+      last_name:
+        type: string
+      password:
+        type: string
+      pdam:
+        type: string
+      pin:
+        type: integer
+      updated_at:
+        type: string
+      username:
+        type: string
+    type: object
+info:
+  contact: {}
+  license: {}
+paths:
+  /get_data:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.PetugasData'
+      summary: Retrieves petigas data
+  /users/{id}:
+    get:
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.User'
+      summary: Retrieves user based on given ID
+swagger: "2.0"

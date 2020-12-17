@@ -5,6 +5,7 @@ import (
 	"altar-app/domain/repository"
 	"errors"
 	"github.com/jinzhu/gorm"
+	"strings"
 )
 
 //TransactionRepo : Call DB
@@ -31,4 +32,22 @@ func (r *TransactionRepo) GetTransactions() ([]entity.Transaction, error) {
 		return nil, errors.New("transaction not found")
 	}
 	return transactions, nil
+}
+
+//SaveTransactions : Save Data Transaksi
+func (r *TransactionRepo) SaveTransactions(trx *entity.Transaction) (*entity.Transaction, map[string]string) {
+	var transactions entity.Transaction
+	dbErr := map[string]string{}
+	err := r.db.Debug().Create(&trx).Error
+	if err != nil {
+		//If the email is already taken
+		if strings.Contains(err.Error(), "duplicate") || strings.Contains(err.Error(), "Duplicate") {
+			dbErr["email_taken"] = "email already taken"
+			return nil, dbErr
+		}
+		//any other db error
+		dbErr["db_error"] = "database error"
+		return nil, dbErr
+	}
+	return &transactions, nil
 }

@@ -91,3 +91,29 @@ func (p *Pelanggans) GetTagihanPelanggan(c *gin.Context) {
 
 	c.JSON(http.StatusOK, rb.SetResponse("010101").SetData(tagihanpelanggan).Build(c))
 }
+
+//InquiryLoketTagihanPelanggan : Get Inquiry Loket Tagihan Pelanggan by Nosamb
+func (p *Pelanggans) InquiryLoketTagihanPelanggan(c *gin.Context) {
+	var postDataTerima *entity.InputInquiryPelanggan
+	if err := c.ShouldBindJSON(&postDataTerima); err != nil {
+		c.JSON(http.StatusUnprocessableEntity, gin.H{
+			"invalid_json": "invalid json",
+		})
+		return
+	}
+	var err error
+	tagihanair := entity.RekairDetails{}
+
+	tagihanair, err = p.pl.InquiryLoketTagihanAirByNosamb(postDataTerima)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	var penagihanPelanggan = make(map[string]interface{})
+	penagihanPelanggan["penagihan_pelanggan"] = tagihanair
+	rb := &response.ResponseBuilder{}
+
+	c.JSON(http.StatusOK, rb.SetResponse("030102").SetData(penagihanPelanggan).Build(c))
+}
