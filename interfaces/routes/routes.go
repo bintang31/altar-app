@@ -53,7 +53,7 @@ func API() {
 	users := interfaces.NewUsers(services.User, redisService.Auth, tk)
 	roles := interfaces.NewRoles(services.Role, redisService.Auth, tk)
 	pelanggans := interfaces.NewPelanggans(services.Pelanggan, services.Penagihan, services.User, redisService.Auth, tk)
-	penagihans := interfaces.NewPenagihans(services.Penagihan, services.User, services.Transaksi, redisService.Auth, tk)
+	penagihans := interfaces.NewPenagihans(services.Penagihan, services.User, services.Transaksi, services.Pelanggan, redisService.Auth, tk)
 	petugas := interfaces.NewPetugass(services.Petugas, services.Penagihan, services.User, redisService.Auth, tk)
 	transactions := interfaces.NewTransactions(services.Transaksi, services.User, redisService.Auth, tk)
 	authenticate := interfaces.NewAuthenticate(services.User, redisService.Auth, tk)
@@ -97,7 +97,7 @@ func API() {
 	//penagihans routes
 	penagihanRoute := r.Group("/v1/api/penagihan")
 	penagihanRoute.GET("/", middleware.AuthMiddleware(), penagihans.GetPenagihans)
-	penagihanRoute.POST("/bayar_sync", middleware.AuthMiddleware(), penagihans.BayarTagihanPelangganBulk)
+	penagihanRoute.POST("/bayar_sync", middleware.AuthMiddleware(), penagihans.BayarTagihanPelangganAsync)
 	penagihanRoute.POST("/bayar", middleware.AuthMiddleware(), penagihans.BayarTagihanPelanggan)
 
 	//transactions routes

@@ -35,3 +35,55 @@ func (p *PelanggansTask) PelanggansTask(nosamb string) (a map[string]interface{}
 	fmt.Printf("userID :%+v\n", penagihan.Nama)
 	return data
 }
+
+//InquiryPelanggansTask : Inquiry Pelanggan Task
+func (p *PelanggansTask) InquiryPelanggansTask(nosamb string, pdam string) (a map[string]interface{}) {
+	data := make(map[string]interface{})
+	var err error
+	var tokenErr = map[string]string{}
+	var postDataTerima = entity.InputInquiryPelanggan{}
+	postDataTerima.Nosamb = nosamb
+	postDataTerima.Pdam = pdam
+	tagihanair := entity.RekairDetails{}
+	tagihanair, err = p.pl.InquiryLoketTagihanAirByNosamb(&postDataTerima)
+	if err != nil {
+		fmt.Printf("tagihanair :%+v\n", "Error Log")
+		return
+	}
+	tagihannonair := entity.NonAirDetails{}
+	tagihannonair, err = p.pl.InquiryLoketTagihanNonAirByNosamb(&postDataTerima)
+	if err != nil {
+		fmt.Printf("tagihannonair :%+v\n", "Error Log")
+		return
+	}
+	angsuran := entity.AngsuranDetails{}
+	angsuran, err = p.pl.InquiryLoketAngsuranByNosamb(&postDataTerima)
+	if err != nil {
+		fmt.Printf("angsuran :%+v\n", "Error Log")
+		return
+	}
+	if len(tagihanair) > 0 {
+		for _, sr := range tagihanair {
+			var drdUpdate = entity.Drd{}
+			drdUpdate.Nosamb = sr.Nosamb
+			drdUpdate.Periode = sr.Periode
+			drdUpdate.Total = sr.Tagihan
+			drdUpdate.TransactionsID = 0
+			_, tokenErr = p.pl.UpdateDrdByNosamb(&drdUpdate)
+			if tokenErr != nil {
+				fmt.Printf("userID :%+v\n", "Error Log")
+				return
+			}
+		}
+	}
+
+	if len(tagihannonair) > 0 {
+		fmt.Printf("tagihannonair :%+v\n", tagihannonair)
+	}
+
+	if len(angsuran) > 0 {
+		fmt.Printf("angsuran :%+v\n", angsuran)
+	}
+
+	return data
+}

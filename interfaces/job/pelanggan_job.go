@@ -4,6 +4,7 @@ import (
 	"altar-app/application"
 	"altar-app/application/config"
 	"altar-app/domain/entity"
+	logger "altar-app/infrastructure/logger"
 	"altar-app/infrastructure/queue/producer"
 	"encoding/json"
 	"fmt"
@@ -25,31 +26,27 @@ func NewPelangganJobs(pl application.PelangganAppInterface, pn application.Penag
 	}
 }
 
-//GetPelangganAlls : Get All Pelanggan
-func (p *PelangganJobs) GetPelangganAlls() {
-	conf := config.LoadAppConfig("amqp")
-	payload := make(map[string]interface{})
-	payload["action"] = "terima_kolektif"
-	payload["nosamb"] = "08111009"
-	payload["pdam"] = "MJI"
-	//queue.SendWithParam(param)
-	data, _ := json.Marshal(payload)
-	producer.Producer.CreateItem(conf.QueueName, string(data))
-}
-
 //InquiryLoket : InquiryLoket Pelanggan
 func (p *PelangganJobs) InquiryLoket() {
-	var input = entity.InputInquiryPelanggan{}
-	input.Nosamb = "091310001"
-	input.Pdam = "MJI"
 	var err error
-	tagihanair := entity.RekairDetails{}
+	penagihan := entity.PenagihansSrKolektifs{}
 
-	tagihanair, err = p.pl.InquiryLoketTagihanAirByNosamb(&input)
+	penagihan, err = p.pn.GetPenagihansInquiryProcess()
+
+	conf := config.LoadAppConfig("amqp")
+	for _, p := range penagihan {
+		payload := make(map[string]interface{})
+		payload["action"] = "inquiry_nosamb"
+		payload["nosamb"] = p.Nosamb
+		payload["pdam"] = p.KodePdam
+		//queue.SendWithParam(param)
+		data, _ := json.Marshal(payload)
+		producer.Producer.CreateItem(conf.QueueName, string(data))
+	}
 
 	if err != nil {
-		fmt.Printf("userID :%+v\n", err)
+		logger.InfoLogHandler("Worker Stopped")
 		return
 	}
-	fmt.Printf("userID :%+v\n", tagihanair)
+	fmt.Printf("userID :%+v\n", penagihan)
 }

@@ -21,7 +21,7 @@ func InitCronInfo() {
 	if err != nil {
 		panic(err)
 	}
-	defer services.Close()
+
 	pelanggans := interfaces.NewPelangganJobs(services.Pelanggan, services.Penagihan, services.User)
 	_, _ = c.AddFunc("2 * * * * *", pelanggans.InquiryLoket)
 	//_, _ = c.AddFunc("15 * * * * *", job.CronExportData)

@@ -20,8 +20,10 @@ type InputInquiryPelanggan struct {
 
 //InquiryCollection : Struct Entity InquiryCollection
 type InquiryCollection struct {
-	Rekair       []RekairDetail `json:"rekair"`
-	Totaltagihan int            `json:"totaltagihan"`
+	Rekair       []RekairDetail   `json:"rekair"`
+	Nonair       []NonAirDetail   `json:"nonair"`
+	Angsuran     []AngsuranDetail `json:"angsuran"`
+	Totaltagihan int              `json:"totaltagihan"`
 }
 
 //RekairDetail : Struct Inquiry rekening air
@@ -36,7 +38,49 @@ type RekairDetail struct {
 	Bulan          string  `json:"bulan"`
 	Nama           string  `json:"nama"`
 	Nosamb         string  `json:"nosamb"`
+	Action         string  `json:"action"`
+	Lunas          string  `json:"lunas"`
 }
 
 //RekairDetails : Struct list Pelanggan
 type RekairDetails []RekairDetail
+
+//NonAirDetail : Struct Inquiry NonAir
+type NonAirDetail struct {
+	Kode             string  `json:"kode"`
+	Nomor            string  `json:"nomor"`
+	Periode          string  `json:"periode"`
+	Pdam             string  `json:"pdam"`
+	Alamat           string  `json:"alamat"`
+	Jenis            string  `json:"jenis"`
+	FlagAngsur       int     `json:"flagangsur"`
+	Flag             string  `json:"flag"`
+	KetJenis         string  `json:"ketjenis"`
+	DibebankanKepada string  `json:"dibebankankepada"`
+	DendaTunggakan   float64 `json:"dendatunggakan"`
+	Total            float64 `json:"total"`
+	Administrasi     float64 `json:"administrasi"`
+}
+
+//NonAirDetails : Struct list Pelanggan
+type NonAirDetails []NonAirDetail
+
+//AngsuranDetail : Struct Inquiry Angsuran
+type AngsuranDetail struct {
+	Kode             string  `json:"kode"`
+	Nomor            string  `json:"nomor"`
+	Periode          string  `json:"periode"`
+	Pdam             string  `json:"pdam"`
+	Alamat           string  `json:"alamat"`
+	Jenis            string  `json:"jenis"`
+	FlagAngsur       int     `json:"flagangsur"`
+	Flag             string  `json:"flag"`
+	KetJenis         string  `json:"ketjenis"`
+	DibebankanKepada string  `json:"dibebankankepada"`
+	DendaTunggakan   float64 `json:"dendatunggakan"`
+	Total            float64 `json:"total"`
+	Administrasi     float64 `json:"administrasi"`
+}
+
+//NonAirDetails : Struct list Pelanggan
+type AngsuranDetails []AngsuranDetail

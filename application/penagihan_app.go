@@ -19,6 +19,7 @@ type PenagihanAppInterface interface {
 	GetPenagihanByNosamb(string) (*entity.Penagihan, error)
 	BayarTagihanByNosamb(*entity.Bayar) (*entity.ResponseLoket, map[string]string)
 	GetPenagihanByParam(*entity.PenagihansParams) ([]entity.PenagihansSrKolektif, error)
+	GetPenagihansInquiryProcess() ([]entity.PenagihansSrKolektif, error)
 }
 
 func (p *penagihanApp) GetPenagihans() ([]entity.Penagihan, error) {
@@ -39,4 +40,8 @@ func (p *penagihanApp) BayarTagihanByNosamb(u *entity.Bayar) (*entity.ResponseLo
 
 func (p *penagihanApp) GetPenagihanByParam(t *entity.PenagihansParams) ([]entity.PenagihansSrKolektif, error) {
 	return p.pn.GetPenagihanByParam(t)
+}
+
+func (p *penagihanApp) GetPenagihansInquiryProcess() ([]entity.PenagihansSrKolektif, error) {
+	return p.pn.GetPenagihansInquiryProcess()
 }

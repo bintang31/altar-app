@@ -30,7 +30,6 @@ var RunTask = func(payload string) {
 	if err != nil {
 		panic(err)
 	}
-	defer services.Close()
 	pelanggans := NewPelanggansTask(services.Pelanggan, services.Penagihan, services.User)
 	err = json.Unmarshal([]byte(payload), &tagihan)
 	if err != nil {
@@ -38,7 +37,11 @@ var RunTask = func(payload string) {
 	}
 	if tagihan.Action == "terima_kolektif" {
 		spew.Dump("===> Running Task Payment Kolektif")
+	}
 
+	if tagihan.Action == "inquiry_nosamb" {
+		spew.Dump("===> Running Task Inquiry Nosamb")
+		pelanggans.InquiryPelanggansTask(tagihan.Nosamb, tagihan.Pdam)
 	}
 	if tagihan.Action == "payment_nosamb" {
 		spew.Dump("===> Running Task Payment Nosamb")

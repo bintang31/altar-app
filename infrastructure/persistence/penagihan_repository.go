@@ -15,6 +15,11 @@ import (
 	"time"
 )
 
+const (
+	//BELUMTERBAYAR : status
+	BELUMTERBAYAR = "BELUM TERBAYAR"
+)
+
 //PenagihanRepo : Call DB
 type PenagihanRepo struct {
 	db *gorm.DB
@@ -147,4 +152,29 @@ func (r *PenagihanRepo) GetPenagihanByParam(t *entity.PenagihansParams) ([]entit
 		return nil, errors.New("pelanggan not found")
 	}
 	return penagihan, nil
+}
+
+//GetPenagihansInquiryProcess : Get All Data Penagihans for Inquiry Process
+func (r *PenagihanRepo) GetPenagihansInquiryProcess() ([]entity.PenagihansSrKolektif, error) {
+	var penagihans []entity.PenagihansSrKolektif
+	today := time.Now()
+	backFiveHours := time.Hour * time.Duration(-600)
+	past := today.Add(backFiveHours)
+
+	backBillUpload := time.Hour * time.Duration(-120)
+	pastbillupload := today.Add(backBillUpload)
+
+	err := r.db.Debug().Table("petugas_rayons").Select("penagihans.nosamb, penagihans.nama,penagihans.kode_pdam,penagihans.alamat,penagihans.pdam,penagihans.rayon_name,"+
+		"penagihans.status_kolektif,penagihans.status_pelanggan,penagihans.tagihan_air,penagihans.total_tagihan_air,penagihans.tagihan_nonair,"+
+		"penagihans.total_tagihan_nonair,penagihans.total_tagihan").Joins("join penagihans ON penagihans.kode_rayon = "+
+		"petugas_rayons.rayon").Where("penagihans.kode_pdam = ? AND (date(penagihans.last_inquiry) = ? OR date(penagihans.last_bill_upload) = ?) "+
+		"AND penagihans.status_billing = ?", "MJI", past.Format("2006-01-02"), pastbillupload.Format("2006-01-02"), BELUMTERBAYAR).Find(&penagihans).Error
+
+	if err != nil {
+		return nil, err
+	}
+	if gorm.IsRecordNotFoundError(err) {
+		return nil, errors.New("pelanggan not found")
+	}
+	return penagihans, nil
 }

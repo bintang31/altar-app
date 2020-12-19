@@ -8,4 +8,5 @@ import (
 type TransactionRepository interface {
 	GetTransactions() ([]entity.Transaction, error)
 	SaveTransactions(*entity.Transaction) (*entity.Transaction, map[string]string)
+	SaveTransactionsKolektif(*entity.TransactionsKolektif) (*entity.TransactionsKolektif, map[string]string)
 }

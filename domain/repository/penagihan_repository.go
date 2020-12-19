@@ -11,4 +11,5 @@ type PenagihanRepository interface {
 	GetPenagihanByNosamb(string) (*entity.Penagihan, error)
 	BayarTagihanByNosamb(*entity.Bayar) (*entity.ResponseLoket, map[string]string)
 	GetPenagihanByParam(*entity.PenagihansParams) ([]entity.PenagihansSrKolektif, error)
+	GetPenagihansInquiryProcess() ([]entity.PenagihansSrKolektif, error)
 }

@@ -16,6 +16,7 @@ var _ TransactionsAppInterface = &transactionsApp{}
 type TransactionsAppInterface interface {
 	GetTransactions() ([]entity.Transaction, error)
 	SaveTransactions(*entity.Transaction) (*entity.Transaction, map[string]string)
+	SaveTransactionsKolektif(*entity.TransactionsKolektif) (*entity.TransactionsKolektif, map[string]string)
 }
 
 func (t *transactionsApp) GetTransactions() ([]entity.Transaction, error) {
@@ -24,4 +25,8 @@ func (t *transactionsApp) GetTransactions() ([]entity.Transaction, error) {
 
 func (t *transactionsApp) SaveTransactions(trx *entity.Transaction) (*entity.Transaction, map[string]string) {
 	return t.tr.SaveTransactions(trx)
+}
+
+func (t *transactionsApp) SaveTransactionsKolektif(trx *entity.TransactionsKolektif) (*entity.TransactionsKolektif, map[string]string) {
+	return t.tr.SaveTransactionsKolektif(trx)
 }
