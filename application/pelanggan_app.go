@@ -16,12 +16,13 @@ var _ PelangganAppInterface = &pelangganApp{}
 type PelangganAppInterface interface {
 	GetPelanggans() ([]entity.Pelanggan, error)
 	GetTagihanAirPelanggansByNosamb(string) ([]entity.Drd, error)
-	GetTagihanNonAirPelanggansByNosamb(string) ([]entity.Nonair, error)
+	GetTagihanNonAirPelanggansByNosamb(*entity.PeriodeNonair) ([]entity.Nonair, error)
 	InquiryLoketTagihanAirByNosamb(*entity.InputInquiryPelanggan) ([]entity.RekairDetail, error)
 	UpdateDrdByNosamb(*entity.Drd) (*entity.Drd, map[string]string)
 	UpdateNonAirByNosamb(*entity.Nonair) (*entity.Nonair, map[string]string)
 	InquiryLoketTagihanNonAirByNosamb(*entity.InputInquiryPelanggan) ([]entity.NonAirDetail, error)
 	InquiryLoketAngsuranByNosamb(*entity.InputInquiryPelanggan) ([]entity.AngsuranDetail, error)
+	GetTagihanNonAirPelanggansByPeriode(string) ([]map[string]interface{}, error)
 }
 
 func (p *pelangganApp) GetPelanggans() ([]entity.Pelanggan, error) {
@@ -32,8 +33,12 @@ func (p *pelangganApp) GetTagihanAirPelanggansByNosamb(nosamb string) ([]entity.
 	return p.pl.GetTagihanAirPelanggansByNosamb(nosamb)
 }
 
-func (p *pelangganApp) GetTagihanNonAirPelanggansByNosamb(nosamb string) ([]entity.Nonair, error) {
-	return p.pl.GetTagihanNonAirPelanggansByNosamb(nosamb)
+func (p *pelangganApp) GetTagihanNonAirPelanggansByNosamb(u *entity.PeriodeNonair) ([]entity.Nonair, error) {
+	return p.pl.GetTagihanNonAirPelanggansByNosamb(u)
+}
+
+func (p *pelangganApp) GetTagihanNonAirPelanggansByPeriode(nosamb string) ([]map[string]interface{}, error) {
+	return p.pl.GetTagihanNonAirPelanggansByPeriode(nosamb)
 }
 
 func (p *pelangganApp) InquiryLoketTagihanAirByNosamb(u *entity.InputInquiryPelanggan) ([]entity.RekairDetail, error) {

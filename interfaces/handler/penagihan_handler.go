@@ -89,8 +89,9 @@ func (p *Penagihans) BayarTagihanPelanggan(c *gin.Context) {
 		return
 	}
 	var penagihan *entity.Penagihan
-	//var responseloket *entity.ResponseLoket
+	var responseloket *entity.ResponseLoket
 	var tokenErr = map[string]string{}
+	rb := &response.ResponseBuilder{}
 	var err error
 	//Check if the user is authenticated first
 	metadata, err := p.tk.ExtractTokenMetadata(c.Request)
@@ -110,29 +111,47 @@ func (p *Penagihans) BayarTagihanPelanggan(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return
 	}
-	//validate the request:
-	if user.Pin != postDataTerima.Pin {
-		c.JSON(http.StatusUnprocessableEntity, map[string]interface{}{"message": "Invalid PIN"})
-		return
-	}
 	penagihan, err = p.pn.GetPenagihanByNosamb(postDataTerima.Nosamb)
 	fmt.Printf("Penagihan :%+v\n", penagihan)
-	/*postDataTerima.Pdam = user.Pdam
+	//validate the request:
+	if user.Pin != postDataTerima.Pin {
+		c.JSON(http.StatusUnprocessableEntity, rb.SetResponse("020103").SetData("Invalid PIN").Build(c))
+		return
+	}
+	if penagihan.TotalTagihan > user.Limit {
+		c.JSON(http.StatusUnprocessableEntity, rb.SetResponse("020104").SetData("Total Tagihan Melebihi Limit Petugas").Build(c))
+		return
+	}
+
+	postDataTerima.Pdam = user.Pdam
+	postDataTerima.UserLoket = user.Name
 	responseloket, tokenErr = p.pn.BayarTagihanByNosamb(postDataTerima)
 	if tokenErr != nil {
 		c.JSON(http.StatusInternalServerError, tokenErr)
 		return
-	}*/
+	}
+
+	if responseloket.Message != "Payment success" {
+		c.JSON(http.StatusUnprocessableEntity, rb.SetResponse("020102").SetData(responseloket.Message).Build(c))
+		return
+	}
 
 	var trxInsert = entity.Transaction{}
-	trxInsert.Pelanggan = penagihan.Nosamb
-	trxInsert.TotalDrd = penagihan.TotalTagihan
-	trxInsert.Denda = penagihan.TotalTagihan
+	trxInsert.TotalDrd = penagihan.TagihanAir
 	trxInsert.Total = penagihan.TotalTagihan
 	trxInsert.Status = 2
+	trxInsert.Notes = postDataTerima.Notes
 	trxInsert.Pdam = penagihan.KodePdam
 	trxInsert.CreatedBy = user.ID
 	trxInsert.Jenis = penagihan.StatusKolektif
+	trxInsert.Pelanggan = penagihan.Nosamb
+	trxInsert.Denda = penagihan.TotalDenda
+	trxInsert.PeriodeBilling = penagihan.PeriodeTagihan
+	trxInsert.TotalAir = penagihan.TotalTagihanAir
+	trxInsert.TotalNonair = penagihan.TotalTagihanNonair
+	trxInsert.LoketMessage = responseloket.Message
+	trxInsert.LoketMessageCode = responseloket.Code
+	trxInsert.LoketMessageStatus = responseloket.Message
 	_, tokenErr = p.tr.SaveTransactions(&trxInsert)
 	if tokenErr != nil {
 		c.JSON(http.StatusInternalServerError, tokenErr)
@@ -140,8 +159,7 @@ func (p *Penagihans) BayarTagihanPelanggan(c *gin.Context) {
 	}
 
 	var drdUpdate = entity.Drd{}
-	drdUpdate.Nosamb = "013110069"
-	drdUpdate.Periode = "202008"
+	drdUpdate.Nosamb = penagihan.Nosamb
 	drdUpdate.Lunas = "1"
 	drdUpdate.TransactionsID = trxInsert.ID
 	_, tokenErr = p.pl.UpdateDrdByNosamb(&drdUpdate)
@@ -152,10 +170,8 @@ func (p *Penagihans) BayarTagihanPelanggan(c *gin.Context) {
 
 	//fmt.Printf("Response From Loket :%+v\n", responseloket)
 	var penagihanPelanggan = make(map[string]interface{})
-	penagihanPelanggan["penagihan_pelanggan"] = postDataTerima
-	penagihanPelanggan["transactions"] = trxInsert
-	penagihanPelanggan["rekening_detail"] = drdUpdate
-	rb := &response.ResponseBuilder{}
+	penagihanPelanggan["transaction_id"] = trxInsert.ID
+	penagihanPelanggan["message"] = responseloket.Message
 
 	c.JSON(http.StatusOK, rb.SetResponse("030102").SetData(penagihanPelanggan).Build(c))
 }

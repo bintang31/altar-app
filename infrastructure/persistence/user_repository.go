@@ -5,9 +5,11 @@ import (
 	"altar-app/domain/repository"
 	"altar-app/infrastructure/security"
 	"errors"
+	"fmt"
 	"github.com/jinzhu/gorm"
 	"golang.org/x/crypto/bcrypt"
 	"strings"
+	"time"
 )
 
 //UserRepo : Call DB
@@ -38,6 +40,25 @@ func (r *UserRepo) SaveUser(user *entity.User) (*entity.User, map[string]string)
 		return nil, dbErr
 	}
 	return user, nil
+}
+
+//UpdateUser : Update User to DB
+func (r *UserRepo) UpdateUser(u *entity.User) (*entity.User, map[string]string) {
+	dbErr := map[string]string{}
+	var user entity.User
+	currentTime := time.Now().Format("2006-01-02 15:04:05")
+	err := r.db.Debug().Model(&user).Where("id = ?", u.ID).Updates(map[string]interface{}{
+		"pin":        u.Pin,
+		"limit":      u.Limit,
+		"updated_at": currentTime,
+	}).Error
+	fmt.Printf("userID :%+v\n", user)
+	if err != nil {
+		//any other db error
+		dbErr["db_error"] = "database error"
+		return nil, dbErr
+	}
+	return u, nil
 }
 
 //GetUser : Get User Detail from DB

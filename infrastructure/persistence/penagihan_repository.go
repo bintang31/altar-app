@@ -50,7 +50,8 @@ func (r *PenagihanRepo) GetPenagihans() ([]entity.Penagihan, error) {
 func (r *PenagihanRepo) GetPenagihansByUserPDAM(id uint64) ([]entity.PenagihansSrKolektif, error) {
 	var penagihans []entity.PenagihansSrKolektif
 
-	err := r.db.Debug().Table("petugas_rayons").Select("penagihans_sr_kolektifs.nosamb, penagihans_sr_kolektifs.nama,penagihans_sr_kolektifs.pelanggan,penagihans_sr_kolektifs.notelp,penagihans_sr_kolektifs.golongan,penagihans_sr_kolektifs.kode_pdam,penagihans_sr_kolektifs.alamat,penagihans_sr_kolektifs.pdam,penagihans_sr_kolektifs.rayon_name,"+
+	err := r.db.Debug().Table("petugas_rayons").Select("penagihans_sr_kolektifs.nosamb, penagihans_sr_kolektifs.nama,penagihans_sr_kolektifs.pelanggan,penagihans_sr_kolektifs.notelp,penagihans_sr_kolektifs.golongan,"+
+		"penagihans_sr_kolektifs.kode_pdam,penagihans_sr_kolektifs.alamat,penagihans_sr_kolektifs.pdam,penagihans_sr_kolektifs.rayon_name,"+
 		"penagihans_sr_kolektifs.status_kolektif,penagihans_sr_kolektifs.status_pelanggan,penagihans_sr_kolektifs.tagihan_air,penagihans_sr_kolektifs.total_tagihan_air,penagihans_sr_kolektifs.tagihan_nonair,"+
 		"penagihans_sr_kolektifs.total_tagihan_nonair,penagihans_sr_kolektifs.total_tagihan,penagihans_sr_kolektifs.status_billing,penagihans_sr_kolektifs.periode_tagihan").Joins("join penagihans_sr_kolektifs ON penagihans_sr_kolektifs.kode_rayon = "+
 		"petugas_rayons.rayon").Where("petugas_rayons.petugas = ? AND penagihans_sr_kolektifs.status_billing = ?", id, "BELUM TERBAYAR").Order("penagihans_sr_kolektifs.total_tagihan desc").Find(&penagihans).Error
@@ -94,7 +95,7 @@ func (r *PenagihanRepo) BayarTagihanByNosamb(u *entity.Bayar) (*entity.ResponseL
 	formloket := url.Values{}
 	formloket.Add("nosamb", u.Nosamb)
 	formloket.Add("pdamcode", u.Pdam)
-	formloket.Add("userloket", conf.UserLoket)
+	formloket.Add("userloket", u.UserLoket)
 	formloket.Add("totaltagihan", strconv.FormatFloat(penagihans.TotalTagihan, 'f', 2, 64))
 	formloket.Add("tglbayar", timeBayar)
 

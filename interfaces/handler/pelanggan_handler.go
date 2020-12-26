@@ -68,15 +68,15 @@ func (p *Pelanggans) GetTagihanPelanggan(c *gin.Context) {
 	var penagihan *entity.Penagihan
 	nosamb := c.Param("nosamb")
 	var err error
-	tagihanair := entity.Drds{}       //customize tagihanair
-	tagihannonair := entity.Nonairs{} //customize tagihannonair
+	tagihanair := entity.Drds{}                //customize tagihanair
+	var tagihannonair []map[string]interface{} //customize tagihannonair
 	//us, err = application.UserApp.GetUsers()
 	tagihanair, err = p.pl.GetTagihanAirPelanggansByNosamb(nosamb)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return
 	}
-	tagihannonair, err = p.pl.GetTagihanNonAirPelanggansByNosamb(nosamb)
+	tagihannonair, err = p.pl.GetTagihanNonAirPelanggansByPeriode(nosamb)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return
@@ -89,7 +89,7 @@ func (p *Pelanggans) GetTagihanPelanggan(c *gin.Context) {
 	tagihanpelanggan["penagihan_pelanggan"] = penagihan
 	rb := &response.ResponseBuilder{}
 
-	c.JSON(http.StatusOK, rb.SetResponse("010101").SetData(tagihanpelanggan).Build(c))
+	c.JSON(http.StatusOK, rb.SetResponse("010102").SetData(tagihanpelanggan).Build(c))
 }
 
 //InquiryLoketTagihanPelanggan : Get Inquiry Loket Tagihan Pelanggan by Nosamb

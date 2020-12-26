@@ -16,8 +16,10 @@ type User struct {
 	LastName  string     `gorm:"size:100;not null;" json:"last_name"`
 	Email     string     `gorm:"size:100;not null;unique" json:"email"`
 	Pdam      string     `gorm:"size:100;not null;unique" json:"pdam"`
+	Name      string     `gorm:"size:100;null;unique" json:"name"`
 	Password  string     `gorm:"size:100;not null;" json:"password"`
 	Pin       int        `gorm:"size:255;not null;" json:"pin"`
+	Limit     float64    `json:"limit" gorm:"null"`
 	CreatedAt time.Time  `gorm:"default:CURRENT_TIMESTAMP" json:"created_at"`
 	UpdatedAt time.Time  `gorm:"default:CURRENT_TIMESTAMP" json:"updated_at"`
 	DeletedAt *time.Time `json:"deleted_at,omitempty"`

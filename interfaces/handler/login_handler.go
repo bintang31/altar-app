@@ -27,6 +27,7 @@ func NewAuthenticate(uApp application.UserAppInterface, rd auth.AuthInterface, t
 	}
 }
 
+//Login : Handler Login Auth
 func (au *Authenticate) Login(c *gin.Context) {
 	var user *entity.User
 	var tokenErr = map[string]string{}
@@ -58,8 +59,7 @@ func (au *Authenticate) Login(c *gin.Context) {
 		return
 	}
 	userData := make(map[string]interface{})
-	userData["access_token"] = ts.AccessToken
-	userData["refresh_token"] = ts.RefreshToken
+	userData["token"] = ts.AccessToken
 	userData["id"] = u.ID
 	userData["first_name"] = u.FirstName
 	userData["last_name"] = u.LastName
@@ -67,6 +67,7 @@ func (au *Authenticate) Login(c *gin.Context) {
 	c.JSON(http.StatusOK, userData)
 }
 
+//Logout : Handler Logout Auth
 func (au *Authenticate) Logout(c *gin.Context) {
 	//check is the user is authenticated first
 	metadata, err := au.tk.ExtractTokenMetadata(c.Request)

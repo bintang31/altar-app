@@ -34,7 +34,31 @@
             "response": {
                 "code": "20000000",
                 "status": "SUCCESS",
-                "message": "Get List All Rayon"
+                "message": "Get Data Tagihan Pelanggan"
+            },
+            "properties": {}
+        },
+        "020102": {
+            "response": {
+                "code": "42200000",
+                "status": "422 Unprocessable Entity",
+                "message": "Transaksi Tidak Dapat Diproses"
+            },
+            "properties": {}
+        },
+        "020103": {
+            "response": {
+                "code": "42200000",
+                "status": "422 Unprocessable Entity",
+                "message": "Invalid PIN"
+            },
+            "properties": {}
+        },
+        "020104": {
+            "response": {
+                "code": "42200000",
+                "status": "422 Unprocessable Entity",
+                "message": "Quota Limit exceeded"
             },
             "properties": {}
         },

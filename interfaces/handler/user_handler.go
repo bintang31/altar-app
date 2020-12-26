@@ -4,6 +4,7 @@ import (
 	"altar-app/application"
 	"altar-app/domain/entity"
 	"altar-app/infrastructure/auth"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
@@ -16,7 +17,7 @@ type Users struct {
 	tk auth.TokenInterface
 }
 
-//Users constructor
+//NewUsers constructor
 func NewUsers(us application.UserAppInterface, rd auth.AuthInterface, tk auth.TokenInterface) *Users {
 	return &Users{
 		us: us,
@@ -25,6 +26,7 @@ func NewUsers(us application.UserAppInterface, rd auth.AuthInterface, tk auth.To
 	}
 }
 
+//SaveUser : Save new user
 func (s *Users) SaveUser(c *gin.Context) {
 	var user entity.User
 	if err := c.ShouldBindJSON(&user); err != nil {
@@ -47,6 +49,7 @@ func (s *Users) SaveUser(c *gin.Context) {
 	c.JSON(http.StatusCreated, newUser.PublicUser())
 }
 
+//GetUsers : Get Data ALl User
 func (s *Users) GetUsers(c *gin.Context) {
 	users := entity.Users{} //customize user
 	var err error
@@ -78,4 +81,59 @@ func (s *Users) GetUser(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, user.PublicUser())
+}
+
+//UpdateUser : Update user
+func (s *Users) UpdateUser(c *gin.Context) {
+	var userdata entity.User
+	if err := c.ShouldBindJSON(&userdata); err != nil {
+		c.JSON(http.StatusUnprocessableEntity, gin.H{
+			"invalid_json": "invalid json",
+		})
+		return
+	}
+	var err error
+
+	//Check if the user is authenticated first
+	metadata, err := s.tk.ExtractTokenMetadata(c.Request)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, "Unauthorized")
+		return
+	}
+	//lookup the metadata in redis:
+	userID, err := s.rd.FetchAuth(metadata.TokenUuid)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, "unauthorized")
+		return
+	}
+	fmt.Printf("userID :%+v\n", userID)
+	newUser, dbErr := s.us.UpdateUser(&userdata)
+	if dbErr != nil {
+		c.JSON(http.StatusInternalServerError, dbErr)
+		return
+	}
+	c.JSON(http.StatusCreated, newUser)
+}
+
+//GetProfileUser : Profile User
+func (s *Users) GetProfileUser(c *gin.Context) {
+	//Check if the user is authenticated first
+	metadata, err := s.tk.ExtractTokenMetadata(c.Request)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, "Unauthorized")
+		return
+	}
+	//lookup the metadata in redis:
+	userID, err := s.rd.FetchAuth(metadata.TokenUuid)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, "unauthorized")
+		return
+	}
+	fmt.Printf("userID :%+v\n", userID)
+	user, err := s.us.GetUser(userID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+	c.JSON(http.StatusCreated, user)
 }

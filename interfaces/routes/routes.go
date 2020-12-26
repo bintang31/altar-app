@@ -85,7 +85,9 @@ func API() {
 	//user routes
 	v1.POST("/users", middleware.AuthMiddleware(), users.SaveUser)
 	v1.GET("/users", users.GetUsers)
+	v1.GET("/user", users.GetProfileUser)
 	v1.GET("/users/:user_id", users.GetUser)
+	v1.PUT("/users", middleware.AuthMiddleware(), users.UpdateUser)
 
 	//role routes
 	v1.GET("/roles", middleware.AuthMiddleware(), roles.GetRoles)
@@ -107,6 +109,7 @@ func API() {
 	petugasRoute := r.Group("/v1/api/petugas")
 	petugasRoute.GET("/get_data", middleware.AuthMiddleware(), petugas.GetDataPetugas)
 	petugasRoute.GET("/petugas/profile", middleware.AuthMiddleware(), petugas.GetProfilePetugas)
+	petugasRoute.GET("", middleware.AuthMiddleware(), petugas.GetAllPetugas)
 
 	//pelanggan routes
 	pelangganRoute := r.Group("/v1/api/pelanggan")
