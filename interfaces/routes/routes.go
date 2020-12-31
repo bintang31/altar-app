@@ -53,7 +53,7 @@ func API() {
 	users := interfaces.NewUsers(services.User, redisService.Auth, tk)
 	roles := interfaces.NewRoles(services.Role, redisService.Auth, tk)
 	pelanggans := interfaces.NewPelanggans(services.Pelanggan, services.Penagihan, services.User, redisService.Auth, tk)
-	penagihans := interfaces.NewPenagihans(services.Penagihan, services.User, services.Transaksi, services.Pelanggan, redisService.Auth, tk)
+	penagihans := interfaces.NewPenagihans(services.Penagihan, services.User, services.Petugas, services.Transaksi, services.Pelanggan, redisService.Auth, tk)
 	petugas := interfaces.NewPetugass(services.Petugas, services.Penagihan, services.User, redisService.Auth, tk)
 	transactions := interfaces.NewTransactions(services.Transaksi, services.User, redisService.Auth, tk)
 	authenticate := interfaces.NewAuthenticate(services.User, redisService.Auth, tk)
@@ -69,7 +69,7 @@ func API() {
 
 	r := gin.Default()
 	r.Use(middleware.CORSMiddleware()) //For CORS
-
+	r.Static("/images", "./images")
 	// programmatically set swagger info
 	docs.SwaggerInfo.Title = "AD Example API"
 	docs.SwaggerInfo.Description = "This is a sample server Petstore server."
@@ -104,12 +104,14 @@ func API() {
 
 	//transactions routes
 	v1.POST("/transactions", middleware.AuthMiddleware(), transactions.GetTransactions)
+	v1.GET("/transactions/:id/detail", middleware.AuthMiddleware(), transactions.GetDetailTransactions)
 
 	//petugas routes
 	petugasRoute := r.Group("/v1/api/petugas")
 	petugasRoute.GET("/get_data", middleware.AuthMiddleware(), petugas.GetDataPetugas)
 	petugasRoute.GET("/petugas/profile", middleware.AuthMiddleware(), petugas.GetProfilePetugas)
 	petugasRoute.GET("", middleware.AuthMiddleware(), petugas.GetAllPetugas)
+	petugasRoute.GET("/find", middleware.AuthMiddleware(), petugas.FindPelanggan)
 
 	//pelanggan routes
 	pelangganRoute := r.Group("/v1/api/pelanggan")

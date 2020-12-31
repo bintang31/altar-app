@@ -156,3 +156,35 @@ func (pts *Petugass) GetAllPetugas(c *gin.Context) {
 
 	c.JSON(http.StatusOK, rb.SetResponse("010101").SetData(petugas).Build(c))
 }
+
+//FindPelanggan : Find Pelanggan
+func (pts *Petugass) FindPelanggan(c *gin.Context) {
+	var paramFilter *entity.PelangganParams
+	if err := c.ShouldBindQuery(&paramFilter); err != nil {
+		c.JSON(http.StatusUnprocessableEntity, gin.H{
+			"invalid_filter": "invalid param filter",
+		})
+		return
+	}
+	var err error
+	//Check if the user is authenticated first
+	metadata, err := pts.tk.ExtractTokenMetadata(c.Request)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, "Unauthorized")
+		return
+	}
+	//lookup the metadata in redis:
+	userID, err := pts.rd.FetchAuth(metadata.TokenUuid)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, "unauthorized")
+		return
+	}
+
+	fmt.Printf("userID :%+v\n", userID)
+
+	var petugasalldata = make(map[string]interface{})
+	petugasalldata["profile_petugas"] = paramFilter
+	rb := &response.ResponseBuilder{}
+
+	c.JSON(http.StatusOK, rb.SetResponse("010101").SetData(petugasalldata).Build(c))
+}

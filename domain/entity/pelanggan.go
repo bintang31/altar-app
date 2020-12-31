@@ -68,19 +68,43 @@ type NonAirDetails []NonAirDetail
 //AngsuranDetail : Struct Inquiry Angsuran
 type AngsuranDetail struct {
 	Kode             string  `json:"kode"`
+	Urutan           string  `json:"urutan"`
+	Noangsuran       string  `json:"noangsuran"`
 	Nomor            string  `json:"nomor"`
 	Periode          string  `json:"periode"`
 	Pdam             string  `json:"pdam"`
 	Alamat           string  `json:"alamat"`
+	Bulan            string  `json:"bulan"`
 	Jenis            string  `json:"jenis"`
 	FlagAngsur       int     `json:"flagangsur"`
+	Termin           int     `json:"termin"`
+	Lunas            string  `json:"lunas"`
 	Flag             string  `json:"flag"`
 	KetJenis         string  `json:"ketjenis"`
+	JenisKeterangan  string  `json:"jenis_keterangan"`
 	DibebankanKepada string  `json:"dibebankankepada"`
 	DendaTunggakan   float64 `json:"dendatunggakan"`
 	Total            float64 `json:"total"`
 	Administrasi     float64 `json:"administrasi"`
 }
 
-//NonAirDetails : Struct list Pelanggan
+//AngsuranDetails : Struct list Pelanggan
 type AngsuranDetails []AngsuranDetail
+
+//PeriodeRiwayat : Struct Summary Periode Riwayat Tagihan
+type PeriodeRiwayat struct {
+	Periode         string  `gorm:"size:100;not null;" json:"periode"`
+	Nosamb          string  `gorm:"size:100;not null;" json:"nosamb"`
+	Bulan           string  `gorm:"size:100;not null;" json:"bulan"`
+	Status          string  `gorm:"size:100;not null;" json:"status"`
+	TotalPerPeriode float64 `gorm:"size:100;null;" json:"total_per_periode"`
+	TotalPemakaian  float64 `gorm:"size:100;null;" json:"total_pemakaian"`
+}
+
+//PeriodeRiwayats : Struct list PeriodeRiwayat
+type PeriodeRiwayats []PeriodeRiwayat
+
+//PelangganParams : Struct Pelanggan With Parameter
+type PelangganParams struct {
+	Pelanggan string `form:"pelanggan" json:"pelanggan"`
+}

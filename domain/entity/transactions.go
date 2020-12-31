@@ -102,3 +102,31 @@ type RekairDetailBulkPelangganKolektif struct {
 	Nosamb       string  `json:"nosamb"`
 	TotalTagihan float64 `json:"total_tagihan"`
 }
+
+// TransactionPelanggan : struct for transaction pelanggan
+type TransactionPelanggan struct {
+	ID              int     `json:"id" gorm:"primary_key"`
+	Nosamb          string  `json:"nosamb"`
+	Nama            string  `json:"nama"`
+	Alamat          string  `json:"alamat"`
+	Notes           string  `json:"notes"`
+	Golongan        string  `json:"golongan" gorm:"not null; unique; size:255"`
+	KodePdam        string  `json:"kode_pdam" gorm:"not null; unique; size:50"`
+	Pdam            string  `json:"pdam" gorm:"not null; unique; size:50"`
+	RayonName       string  `json:"rayon_name" gorm:"null"`
+	StatusKolektif  string  `json:"status_kolektif" gorm:"null; size:100"`
+	PeriodeBilling  string  `json:"periode_billing" gorm:"null; size:100"`
+	StatusPelanggan string  `json:"status_pelanggan" gorm:"null; size:100"`
+	StatusBilling   string  `json:"status_billing" gorm:"null; size:100"`
+	TotalTagihan    float64 `json:"total_tagihan"`
+	TglBayar        string  `json:"tgl_bayar"`
+}
+
+// RiwayatTransactionPelanggan : struct for transaction pelanggan
+type RiwayatTransactionPelanggan struct {
+	Periode         string  `json:"periode"`
+	Bulan           string  `gorm:"size:100;not null;" json:"bulan"`
+	Status          string  `gorm:"size:100;not null;" json:"status"`
+	TotalPerPeriode float64 `gorm:"size:100;null;" json:"total_per_periode"`
+	TotalPemakaian  float64 `gorm:"size:100;null;" json:"total_pemakaian"`
+}

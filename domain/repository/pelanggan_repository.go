@@ -15,4 +15,6 @@ type PelangganRepository interface {
 	InquiryLoketTagihanNonAirByNosamb(*entity.InputInquiryPelanggan) ([]entity.NonAirDetail, error)
 	InquiryLoketAngsuranByNosamb(*entity.InputInquiryPelanggan) ([]entity.AngsuranDetail, error)
 	GetTagihanNonAirPelanggansByPeriode(string) ([]map[string]interface{}, error)
+	InsertAngsuranByNosamb(*entity.Nonair) (*entity.Nonair, map[string]string)
+	GetRiwayatTagihanByNosamb(string) ([]map[string]interface{}, error)
 }

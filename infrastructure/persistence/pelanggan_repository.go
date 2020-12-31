@@ -73,6 +73,7 @@ func (r *PelangganRepo) GetTagihanNonAirPelanggansByNosamb(u *entity.PeriodeNona
 func (r *PelangganRepo) GetTagihanNonAirPelanggansByPeriode(nosamb string) ([]map[string]interface{}, error) {
 	var periodenonair []entity.PeriodeNonair
 	var nonair []entity.Nonair
+	var angsuran []entity.AngsuranNonAir
 	err := r.db.Debug().Table("nonairs").Select("periode,bulan,sum(total) as total_per_periode,"+
 		"'BELUM TERBAYAR' as status").Where("lunas = ?", "0").Group("periode,bulan").Order("periode desc").Where("nomor = ?", nosamb).Find(&periodenonair).Error
 	if err != nil {
@@ -91,15 +92,26 @@ func (r *PelangganRepo) GetTagihanNonAirPelanggansByPeriode(nosamb string) ([]ma
 			"nonairs.total,nonairs.denda_tunggakan,nonairs.lainnya").Joins("left join nonairs_jenis "+
 			"ON nonairs_jenis.code = nonairs.jenis").Joins("left join angsuran ON angsuran.nomor = nonairs.nomor").Where("nonairs.nomor = ? "+
 			"and nonairs.lunas = ? and nonairs.periode = ? and nonairs.angsur = ?", nosamb, "0", p.Periode, "0").Order("nonairs.periode asc,nonairs.termin asc").Find(&nonair).Error
+
+		//Angsuran
+		err = r.db.Table("angsuran").Select("angsuran.nomor,nonairs_jenis.name as jenis,nonairs.administrasi,nonairs.denda_tunggakan,angsuran."+
+			"jumlahangsuranpokok as total_tagihan,nonairs.total,"+
+			"concat(nonairs.termin,' dari ' ,angsuran.jumlah_termin) as jumlah_termin,concat('DRD',' ', nonairs.bulan) as keterangan,"+
+			"penagihans_angsuran.sisa_tagihan").Joins("join nonairs ON nonairs.nomor = angsuran.nomor join nonairs_jenis "+
+			"ON nonairs.jenis = nonairs_jenis.code join penagihans_angsuran ON penagihans_angsuran.noangsuran = nonairs.no_angsuran").Where(""+
+			"angsuran.nomor = ? and nonairs.periode = ? and nonairs.angsur = ?", nosamb, p.Periode, "1").Order("nonairs.periode asc,nonairs.termin asc").Find(&angsuran).Error
+
 		if err != nil {
 			return nil, err
 		}
 		if gorm.IsRecordNotFoundError(err) {
 			return nil, errors.New("pelanggan not found")
 		}
+
 		list[x] = map[string]interface{}{
 			"periode":           p.Bulan,
 			"nonair":            nonair,
+			"angsuran":          angsuran,
 			"total_per_periode": p.TotalPerPeriode,
 			"status":            p.Status,
 		}
@@ -188,25 +200,11 @@ func (r *PelangganRepo) UpdateNonAirByNosamb(rd *entity.Nonair) (*entity.Nonair,
 	currentTimeBayar := time.Now().Format("2006-01-02 15:04:05")
 	dbErr := map[string]string{}
 	if rd.TransactionsID > 0 {
-		err := r.db.Debug().Model(&nonairs).Where("nomor = ? and periode = ?", rd.Nomor, rd.Periode).Updates(map[string]interface{}{
+		err := r.db.Debug().Model(&nonairs).Where("nomor = ? and lunas = ?", rd.Nomor, "0").Updates(map[string]interface{}{
 			"lunas":           rd.Lunas,
 			"transactions_id": rd.TransactionsID,
 			"updated_at":      currentTimeBayar,
-			"tglbayar":        currentTimeBayar,
-		}).Error
-		if err != nil {
-			//If the email is already taken
-			if strings.Contains(err.Error(), "duplicate") || strings.Contains(err.Error(), "Duplicate") {
-				dbErr["email_taken"] = "email already taken"
-				return nil, dbErr
-			}
-			//any other db error
-			dbErr["db_error"] = "database error"
-			return nil, dbErr
-		}
-	} else {
-		err := r.db.Debug().Model(&nonairs).Where("nomor = ? and periode = ?", rd.Nomor, rd.Periode).Updates(map[string]interface{}{
-			"total": rd.Total,
+			"waktu_bayar":     currentTimeBayar,
 		}).Error
 		if err != nil {
 			//If the email is already taken
@@ -290,29 +288,15 @@ func (r *PelangganRepo) InquiryLoketAngsuranByNosamb(u *entity.InputInquiryPelan
 //InsertAngsuranByNosamb : Insert Tagihan Angsuran
 func (r *PelangganRepo) InsertAngsuranByNosamb(rd *entity.Nonair) (*entity.Nonair, map[string]string) {
 	var nonairs entity.Nonair
-	currentTimeBayar := time.Now().Format("2006-01-02 15:04:05")
 	dbErr := map[string]string{}
-	if rd.TransactionsID > 0 {
-		err := r.db.Debug().Model(&nonairs).Where("nomor = ? and periode = ?", rd.Nomor, rd.Periode).Updates(map[string]interface{}{
-			"lunas":           rd.Lunas,
-			"transactions_id": rd.TransactionsID,
-			"updated_at":      currentTimeBayar,
-			"tglbayar":        currentTimeBayar,
-		}).Error
-		if err != nil {
-			//If the email is already taken
-			if strings.Contains(err.Error(), "duplicate") || strings.Contains(err.Error(), "Duplicate") {
-				dbErr["email_taken"] = "email already taken"
-				return nil, dbErr
-			}
-			//any other db error
-			dbErr["db_error"] = "database error"
-			return nil, dbErr
-		}
-	} else {
-		err := r.db.Debug().Model(&nonairs).Where("nomor = ? and periode = ?", rd.Nomor, rd.Periode).Updates(map[string]interface{}{
-			"total": rd.Total,
-		}).Error
+	var count int64
+	err := r.db.Debug().First(&nonairs).Where("urutan = ?", rd.Urutan).Count(&count).Error
+	if err != nil {
+		return nil, dbErr
+	}
+	if count < 1 {
+		rd.UpdatedAt = time.Now()
+		err := r.db.Debug().Create(&rd).Error
 		if err != nil {
 			//If the email is already taken
 			if strings.Contains(err.Error(), "duplicate") || strings.Contains(err.Error(), "Duplicate") {
@@ -326,4 +310,62 @@ func (r *PelangganRepo) InsertAngsuranByNosamb(rd *entity.Nonair) (*entity.Nonai
 	}
 
 	return &nonairs, nil
+}
+
+//GetRiwayatTagihanByNosamb : Get Data Riwayat Tagihan by Nosamb
+func (r *PelangganRepo) GetRiwayatTagihanByNosamb(nosamb string) ([]map[string]interface{}, error) {
+	var perioderiwayat []entity.PeriodeRiwayat
+	var tagihanair []entity.Drd
+	var nonair []entity.Nonair
+	var angsuran []entity.AngsuranNonAir
+	err := r.db.Debug().Table("riwayat_billing").Select("periode,bulan,status,sum(total) as total_per_periode,"+
+		"status as status,sum(pakai) as total_pemakaian").Where("nosamb = ?", nosamb).Group("periode,bulan,status").Order("periode desc").Find(&perioderiwayat).Error
+	if err != nil {
+		return nil, err
+	}
+	if gorm.IsRecordNotFoundError(err) {
+		return nil, errors.New("pelanggan not found")
+	}
+	list := make([]map[string]interface{}, len(perioderiwayat))
+
+	x := 0
+	for _, p := range perioderiwayat {
+
+		//Tagihan Air
+		err := r.db.Debug().Where("nosamb = ? AND periode = ? AND lunas = ?", nosamb, p.Periode, "1").Find(&tagihanair).Error
+
+		//Tagihan Non Air
+		err = r.db.Table("nonairs").Select("nonairs.periode,nonairs_jenis.name as jenis_tagihan,nonairs.administrasi,nonairs.biayapasang as biayapasang,"+
+			"nonairs.total,nonairs.denda_tunggakan,nonairs.lainnya").Joins("left join nonairs_jenis "+
+			"ON nonairs_jenis.code = nonairs.jenis").Joins("left join angsuran ON angsuran.nomor = nonairs.nomor").Where("nonairs.nomor = ? "+
+			"and nonairs.lunas = ? and nonairs.periode = ? and nonairs.angsur = ?", nosamb, "1", p.Periode, "0").Order("nonairs.periode asc,nonairs.termin asc").Find(&nonair).Error
+
+		//Angsuran
+		err = r.db.Table("angsuran").Select("angsuran.nomor,nonairs_jenis.name as jenis,nonairs.administrasi,nonairs.denda_tunggakan,angsuran."+
+			"jumlahangsuranpokok as total_tagihan,nonairs.total,"+
+			"concat(nonairs.termin,' dari ' ,angsuran.jumlah_termin) as jumlah_termin,concat('DRD',' ', nonairs.bulan) as keterangan,"+
+			"penagihans_angsuran.sisa_tagihan").Joins("join nonairs ON nonairs.nomor = angsuran.nomor join nonairs_jenis "+
+			"ON nonairs.jenis = nonairs_jenis.code join penagihans_angsuran ON penagihans_angsuran.noangsuran = nonairs.no_angsuran").Where(""+
+			"angsuran.nomor = ? and nonairs.periode = ? and nonairs.angsur = ?", nosamb, p.Periode, "1").Order("nonairs.periode asc,nonairs.termin asc").Find(&angsuran).Error
+
+		if err != nil {
+			return nil, err
+		}
+		if gorm.IsRecordNotFoundError(err) {
+			return nil, errors.New("pelanggan not found")
+		}
+
+		list[x] = map[string]interface{}{
+			"periode":           p.Bulan,
+			"air":               tagihanair,
+			"nonair":            nonair,
+			"angsuran":          angsuran,
+			"total_per_periode": p.TotalPerPeriode,
+			"total_pemakaian":   p.TotalPemakaian,
+			"status":            p.Status,
+		}
+		x = x + 1
+	}
+
+	return list, nil
 }

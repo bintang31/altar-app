@@ -68,8 +68,9 @@ func (p *Pelanggans) GetTagihanPelanggan(c *gin.Context) {
 	var penagihan *entity.Penagihan
 	nosamb := c.Param("nosamb")
 	var err error
-	tagihanair := entity.Drds{}                //customize tagihanair
-	var tagihannonair []map[string]interface{} //customize tagihannonair
+	tagihanair := entity.Drds{}                 //customize tagihanair
+	var tagihannonair []map[string]interface{}  //customize tagihannonair
+	var riwayattagihan []map[string]interface{} //customize tagihannonair
 	//us, err = application.UserApp.GetUsers()
 	tagihanair, err = p.pl.GetTagihanAirPelanggansByNosamb(nosamb)
 	if err != nil {
@@ -81,12 +82,18 @@ func (p *Pelanggans) GetTagihanPelanggan(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return
 	}
+	riwayattagihan, err = p.pl.GetRiwayatTagihanByNosamb(nosamb)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
 	penagihan, err = p.pn.GetPenagihanByNosamb(nosamb)
 	fmt.Printf("userID :%+v\n", penagihan.Nama)
 	var tagihanpelanggan = make(map[string]interface{})
 	tagihanpelanggan["penagihan_billing_nonair"] = tagihannonair
 	tagihanpelanggan["penagihan_billing"] = tagihanair
 	tagihanpelanggan["penagihan_pelanggan"] = penagihan
+	tagihanpelanggan["riwayat_billing"] = riwayattagihan
 	rb := &response.ResponseBuilder{}
 
 	c.JSON(http.StatusOK, rb.SetResponse("010102").SetData(tagihanpelanggan).Build(c))

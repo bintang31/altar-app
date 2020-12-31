@@ -16,6 +16,7 @@ import (
 type Penagihans struct {
 	pn application.PenagihanAppInterface
 	us application.UserAppInterface
+	pt application.PetugasAppInterface
 	tr application.TransactionsAppInterface
 	pl application.PelangganAppInterface
 	rd auth.AuthInterface
@@ -23,10 +24,11 @@ type Penagihans struct {
 }
 
 //NewPenagihans constructor
-func NewPenagihans(pn application.PenagihanAppInterface, us application.UserAppInterface, tr application.TransactionsAppInterface, pl application.PelangganAppInterface, rd auth.AuthInterface, tk auth.TokenInterface) *Penagihans {
+func NewPenagihans(pn application.PenagihanAppInterface, us application.UserAppInterface, pt application.PetugasAppInterface, tr application.TransactionsAppInterface, pl application.PelangganAppInterface, rd auth.AuthInterface, tk auth.TokenInterface) *Penagihans {
 	return &Penagihans{
 		pn: pn,
 		us: us,
+		pt: pt,
 		tr: tr,
 		pl: pl,
 		rd: rd,
@@ -111,6 +113,14 @@ func (p *Penagihans) BayarTagihanPelanggan(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return
 	}
+
+	//Get Petugas profile by user Login
+	petugas, err := p.pt.GetProfilePetugas(userID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
 	penagihan, err = p.pn.GetPenagihanByNosamb(postDataTerima.Nosamb)
 	fmt.Printf("Penagihan :%+v\n", penagihan)
 	//validate the request:
@@ -118,7 +128,7 @@ func (p *Penagihans) BayarTagihanPelanggan(c *gin.Context) {
 		c.JSON(http.StatusUnprocessableEntity, rb.SetResponse("020103").SetData("Invalid PIN").Build(c))
 		return
 	}
-	if penagihan.TotalTagihan > user.Limit {
+	if penagihan.TotalTagihan > petugas.SisaLimit {
 		c.JSON(http.StatusUnprocessableEntity, rb.SetResponse("020104").SetData("Total Tagihan Melebihi Limit Petugas").Build(c))
 		return
 	}
@@ -163,6 +173,16 @@ func (p *Penagihans) BayarTagihanPelanggan(c *gin.Context) {
 	drdUpdate.Lunas = "1"
 	drdUpdate.TransactionsID = trxInsert.ID
 	_, tokenErr = p.pl.UpdateDrdByNosamb(&drdUpdate)
+	if tokenErr != nil {
+		c.JSON(http.StatusInternalServerError, tokenErr)
+		return
+	}
+
+	var nonairUpdate = entity.Nonair{}
+	nonairUpdate.Nomor = penagihan.Nosamb
+	nonairUpdate.Lunas = "1"
+	nonairUpdate.TransactionsID = trxInsert.ID
+	_, tokenErr = p.pl.UpdateNonAirByNosamb(&nonairUpdate)
 	if tokenErr != nil {
 		c.JSON(http.StatusInternalServerError, tokenErr)
 		return

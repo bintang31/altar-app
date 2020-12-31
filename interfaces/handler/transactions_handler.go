@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"strconv"
 )
 
 //Transactions struct defines the dependencies that will be used
@@ -65,6 +66,51 @@ func (t *Transactions) GetTransactions(c *gin.Context) {
 	fmt.Printf("userID :%+v\n", user)
 	var penagihanPelanggan = make(map[string]interface{})
 	penagihanPelanggan["penagihan_pelanggan"] = postDataTerima
+	rb := &response.ResponseBuilder{}
+
+	c.JSON(http.StatusOK, rb.SetResponse("030102").SetData(penagihanPelanggan).Build(c))
+}
+
+//GetDetailTransactions : Get Detail Data Transactions
+func (t *Transactions) GetDetailTransactions(c *gin.Context) {
+	transactionsid, err := strconv.Atoi(c.Param("id"))
+	var transactions *entity.TransactionPelanggan
+	var dbErr = map[string]string{}
+	var riwayattagihan []map[string]interface{}
+	//Check if the user is authenticated first
+	metadata, err := t.tk.ExtractTokenMetadata(c.Request)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, "Unauthorized")
+		return
+	}
+	//lookup the metadata in redis:
+	userID, err := t.rd.FetchAuth(metadata.TokenUuid)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, "unauthorized")
+		return
+	}
+	//Get user profile by user Login
+	user, err := t.us.GetUser(userID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+	//validate the request:
+	transactions, dbErr = t.tr.GetTransactionsByID(transactionsid)
+	if dbErr != nil {
+		c.JSON(http.StatusInternalServerError, dbErr)
+		return
+	}
+
+	riwayattagihan, err = t.tr.GetDetailTransactionsByID(transactionsid)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+	fmt.Printf("userID :%+v\n", user)
+	var penagihanPelanggan = make(map[string]interface{})
+	penagihanPelanggan["pelanggans"] = transactions
+	penagihanPelanggan["riwayat_billing"] = riwayattagihan
 	rb := &response.ResponseBuilder{}
 
 	c.JSON(http.StatusOK, rb.SetResponse("030102").SetData(penagihanPelanggan).Build(c))
